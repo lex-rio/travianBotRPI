@@ -1,0 +1,22 @@
+{
+  "name": "travianbotrpi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lex-rio/travianBotRPI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lex-rio/travianBotRPI/issues"
+  },
+  "homepage": "https://github.com/lex-rio/travianBotRPI#readme",
+  "dependencies": {
+    "puppeteer": "^5.2.0"
+  }
+}
