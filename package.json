@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/lex-rio/travianBotRPI#readme",
   "dependencies": {
-    "puppeteer": "^5.2.0"
+    "puppeteer-core": "^5.2.0"
   }
 }

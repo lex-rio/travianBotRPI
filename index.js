@@ -1,12 +1,13 @@
 "use strict";
 
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 
 (async () => {
         try {
                 const browser = await puppeteer.launch({
-                      headless: true,
-                      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                      executablePath: '/usr/bin/chromium-browser'
+                      //headless: true,
+                      //args: ['--no-sandbox', '--disable-setuid-sandbox'],
                 });
                 const page = await browser.newPage();
                 await page.goto('https://ru4.kingdoms.com');
