@@ -25,5 +25,7 @@ setInterval(() => {
     "session":"d87acc5e25c648fe0cac"
   }).then(data => {
     telegram.log(212565743, encodeURIComponent(JSON.stringify(data.cache[1].data.units)))
+  }).catch(error => {
+    telegram.log(212565743, encodeURIComponent(JSON.stringify(error)))
   })
 }, 120000)
