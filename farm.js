@@ -23,11 +23,11 @@ Object.values(playersFarmLists).map(({villages, chatId, name, session}) => {
         "params": {
           "entryIds":[ 50069 ],
           "listId": village.listId,
-          "villageId": village.villageId
+          "villageId": village.id
         },
         "session": session
       }).then(data => {
-        telegram.log(chatId, name + encodeURIComponent(JSON.stringify(data.cache[1].data.units)))
+        telegram.log(chatId, `${name} ${village.name} ${encodeURIComponent(JSON.stringify(data.cache[1].data.units))}`)
       }).catch(error => {
         telegram.log(chatId, name + encodeURIComponent(JSON.stringify(error)))
       })

@@ -7,8 +7,9 @@
       {
         "entryIds":[ 50069 ],
         "listId": 1684,
-        "villageId": 535379936,
-        "period": 2
+        "id": 535379936,
+        "name": "ЖК степное",  
+        "period": 0.1
       }
     ]
   }
