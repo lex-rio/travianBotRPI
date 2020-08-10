@@ -29,7 +29,7 @@ Object.values(playersFarmLists).map(({villages, chatId, name, session}) => {
       }).then(data => {
         telegram.log(chatId, `${name} ${village.name} ${encodeURIComponent(JSON.stringify(data.cache[1].data.units))}`)
       }).catch(error => {
-        telegram.log(chatId, name + encodeURIComponent(JSON.stringify(error)))
+        telegram.log(chatId, `${name} ${village.name} ${encodeURIComponent(JSON.stringify(error))}`)
       })
     }, village.period * 60000)
   })

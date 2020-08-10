@@ -5,11 +5,10 @@
     "session":"d87acc5e25c648fe0cac",
     "villages": [
       {
-        "entryIds":[ 50069 ],
         "listId": 1684,
         "id": 535379936,
-        "name": "ЖК степное",  
-        "period": 0.1
+        "name": "ЖК степное!",  
+        "period": 2
       }
     ]
   }
