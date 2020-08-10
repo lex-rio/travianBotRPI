@@ -1,0 +1,15 @@
+{
+  "1": {
+    "name": "Михайло",
+    "chatId": "212565743",
+    "session":"d87acc5e25c648fe0cac",
+    "villages": [
+      {
+        "entryIds":[ 50069 ],
+        "listId": 1684,
+        "villageId": 535379936,
+        "period": 2
+      }
+    ]
+  }
+}
