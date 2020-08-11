@@ -1,13 +1,26 @@
 [
   {
-    "name": "Михайло",
+    "name": "solar",
     "chatId": "212565743",
-    "session":"d87acc5e25c648fe0cac",
+    "session":"861d81eee56e0f778f93",
     "villages": [
       {
-        "listId": 1684,
-        "id": 535379936,
-        "name": "ЖК степное",  
+        "listId": 1727,
+        "id": 537116712,
+        "name": "solar core",  
+        "period": 1.5
+      }
+    ]
+  },
+  {
+    "name": "Серхио",
+    "chatId": "212565743",
+    "session":"9e1616752dcad67f82cb",
+    "villages": [
+      {
+        "listId": 1609,
+        "id": 536068116,
+        "name": "Рио",  
         "period": 2
       }
     ]
