@@ -14,18 +14,18 @@ const options = {
 }
 
 const sendFarm = ({village, player}) => {
-  fetch(options, {
+  const postData = {
     "controller":"troops",
-    "action":"startPartialFarmListRaid",
+    "action":"startFarmListRaid",
     "params": {
-      "entryIds":[ 50069 ],
-      "listId": village.listId,
+      "listIds": [village.listId],
       "villageId": village.id
     },
     "session": player.session
-  }).then(data => {
-    if (data.error) {
-      throw data.error
+  }
+  fetch(options, postData).then(data => {
+    if (data.error || !data.cache) {
+      throw data.error || 'empty response'
     }
     telegram.log(player.chatId, `${player.name} ${village.name} ${encodeURIComponent(JSON.stringify(data.cache[1].data.units))}`)
   }).catch(error => {
@@ -33,7 +33,7 @@ const sendFarm = ({village, player}) => {
   })
 }
 
-Object.values(playersFarmLists).map(player => {
+playersFarmLists.map(player => {
   player.villages.map(village => {
     sendFarm({village, player})
     setInterval(
