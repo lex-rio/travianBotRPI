@@ -7,7 +7,38 @@
       {
         "listId": 1684,
         "id": 535379936,
-        "name": "ЖК степное!",  
+        "name": "ЖК степное",  
+        "period": 2
+      }
+    ]
+  },
+  "2": {
+    "name": "lex",
+    "chatId": "212565743",
+    "session":"67decd99f66c292ad818",
+    "villages": [
+      {
+        "listId": 1713,
+        "id": 536461306,
+        "name": "downtown",  
+        "period": 1.5
+      },
+      {
+        "listId": 1815,
+        "id": 535216104,
+        "name": "alaska",  
+        "period": 2
+      },
+      {
+        "listId": 2167,
+        "id": 536690685,
+        "name": "denver",  
+        "period": 2
+      },
+      {
+        "listId": 2168,
+        "id": 536625147,
+        "name": "uptown",  
         "period": 2
       }
     ]
