@@ -1,8 +1,27 @@
 [
   {
+    "name": "Liana",
+    "chatId": "212565743",
+    "session":"e9065550af1b77bdb230",
+    "villages": [
+      {
+        "listId": 2252,
+        "id": 535445466,
+        "name": "gaskoni",  
+        "period": 2
+      },
+      {
+        "listId": 2312,
+        "id": 535445473,
+        "name": "kokuj",
+        "period": 2
+      }
+    ]
+  },
+  {
     "name": "solar",
     "chatId": "212565743",
-    "session":"861d81eee56e0f778f93",
+    "session":"50cae9a365c0e4ef7ec3",
     "villages": [
       {
         "listId": 1727,
@@ -15,7 +34,7 @@
   {
     "name": "Серхио",
     "chatId": "212565743",
-    "session":"9e1616752dcad67f82cb",
+    "session":"51a31f422c8a69ec39c4",
     "villages": [
       {
         "listId": 1609,
@@ -26,9 +45,10 @@
     ]
   },
   {
+    "id": 853,
     "name": "lex",
     "chatId": "212565743",
-    "session":"225357e025d6259446c7",
+    "session":"2692874785b77d06fd22",
     "villages": [
       {
         "listId": 1713,
@@ -52,6 +72,18 @@
         "listId": 2168,
         "id": 536625147,
         "name": "uptown",  
+        "period": 2
+      },
+      {
+        "listId": 2228,
+        "id": 536657916,
+        "name": "island",
+        "period": 2
+      },
+      {
+        "listId": 2234,
+        "id": 535674869,
+        "name": "toronto",
         "period": 2
       }
     ]

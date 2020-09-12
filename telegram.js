@@ -7,7 +7,7 @@ const botId = process.env.BOT_ID
 
 module.exports = {
   log: (chatId, message) =>
-    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=${chatId}&text=${message}`),
+    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=${chatId}&text=${typeof message === 'string' ? message : JSON.stringify(message)}`),
 
   getMessages: () =>
     new Promise((resolve, reject) => {

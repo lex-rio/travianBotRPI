@@ -4,10 +4,11 @@
   "description": "",
   "main": "stats.js",
   "scripts": {
-    "start": "node -r dotenv/config stats.js",
+    "start": "node -r dotenv/config index.js",
     "stats": "node -r dotenv/config stats.js",
     "farm": "node -r dotenv/config farm.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "createDb": "cat schema.sql | sqlite3 database.sqlite"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,8 @@
   },
   "homepage": "https://github.com/lex-rio/travianBotRPI#readme",
   "dependencies": {
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "sqlite3": "^5.0.0",
+    "ws": "^7.3.1"
   }
 }

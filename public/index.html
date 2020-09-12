@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>
+</head>
+<body>
+<div id="main"></div>
+<div id="users"></div>
+<div id="usersForm"></div>
+<script src="/main.js"></script>
+<script>
+
+//const lineDiv = document.getElementById('myChart')
+
+
+/*
+let chartData = new Map()
+
+let chartData = [
+  {
+    x: [1, 2, 3, 4],
+    y: [1, 40, 9, 60],
+    type: 'scatter',
+    name: 'qwe'
+  },
+  {
+    x: [1, 2, 3, 4],
+    y: [1, 20, 4, 22],
+    type: 'scatter'
+  }
+]
+ 
+let layout = {title:'A Line Chart in Plotly'}
+ 
+Plotly.react( lineDiv, [...chartData.values()], layout ) */
+
+  //const main = document.getElementById('main')
+
+  //const ws = new WebSocket('ws://localhost:8082')
+
+  /*ws.onmessage = ({data}) => {
+    const result = JSON.parse(data)
+    console.log(result)
+    result.map(([chart, rank]) => {
+      rank.map(({name, points, kingdomId}) => {
+        if (!chartData.has(kingdomId)) {
+          chartData.set(kingdomId, {x: [], y: [], type: 'scatter', name})
+        }
+        chartData.get(kingdomId).y.push(points)
+        chartData.get(kingdomId).x.push(chartData.get(kingdomId).x.length)
+      })
+    })
+    console.log([...chartData.values()])
+    Plotly.react( lineDiv, [...chartData.values()], layout )
+  }*/
+</script>
+
+</body>
+</html>
