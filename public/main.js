@@ -1,7 +1,7 @@
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
 const app = {
-  ws: new WebSocket('ws://localhost:8082'),
+  ws: new WebSocket(`ws://${window.location.hostname}:8082`),
   send: function(data) {
     this.ws.send(JSON.stringify(data))
   },
