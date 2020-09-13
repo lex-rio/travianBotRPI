@@ -1,5 +1,6 @@
 "use strict";
 
+const telegram = require('./telegram')
 const fetch = require('./fetch')
 
 const actionTypes = [
