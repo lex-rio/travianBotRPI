@@ -29,7 +29,7 @@ const wss = new WebSocket.Server({
 })
 
 const app = new App({
-  broadcast: data => wss.clients.forEach(client => client.send(JSON.stringify({data})))
+  broadcast: data => wss.clients.forEach(client => client.send(JSON.stringify({action: 'updateUser', dataset: data})))
 })
 app.init()
 

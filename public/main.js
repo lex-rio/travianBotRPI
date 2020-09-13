@@ -10,7 +10,11 @@ const app = {
     usersForm.innerHTML = this.generateForm(schemas.user, 'User')
   },
   renderUsers: function (users) {
-    usersContainer.innerHTML = users.map(({userName, id}) => `<div>${userName} <a href="#" onclick="app.deleteUser(${id})">✘</a></div>`).join('')
+    usersContainer.innerHTML = users.map(({userName, userId}) => `<div id="user-${userId}">
+      ${userName} 
+      <a href="#" onclick="app.deleteUser(${userId})">✘</a>
+      <div class="villages"></div>
+    </div>`).join('')
   },
   generateForm: (schema, entity) => {
     return '<form>' + 
@@ -23,6 +27,17 @@ const app = {
   },
   deleteUser: function(id) {
     this.send({action: 'deleteUser', data: {id}})
+  },
+  updateUser: (data) => {
+    const userBlock = document.getElementById(`user-${data.playerId}`)
+    const villagesBlock = userBlock.getElementsByClassName('villages')[0]
+    villagesBlock.innerHTML = data.villages.map(village => `<div id="village-${village.villageId}">
+      ${village.name} - <span><progress value="${village.storage[1]}" max="${village.storageCapacity[1]}"></progress></span>
+      <span><progress value="${village.storage[2]}" max="${village.storageCapacity[2]}"></progress></span>
+      <span><progress value="${village.storage[3]}" max="${village.storageCapacity[3]}"></progress></span>
+      <span><progress value="${village.storage[4]}" max="${village.storageCapacity[4]}"></progress></span>
+    <div>`).join('')
+    userBlock.appendChild(villagesBlock)
   }
 }
 app.ws.onmessage = ({data}) => {
