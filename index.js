@@ -4,6 +4,7 @@ const http = require('http')
 const fs = require('fs')
 const WebSocket = require('ws')
 const App = require('./app')
+const telegram = require('./telegram')
 
 // serve static
 const staticFilesBinnary = fs.readdirSync('./public')
@@ -29,7 +30,10 @@ const wss = new WebSocket.Server({
 })
 
 const app = new App({
-  broadcast: data => wss.clients.forEach(client => client.send(JSON.stringify({action: 'updateUser', dataset: data})))
+  transport: {
+    broadcast: data => wss.clients.forEach(client => client.send(JSON.stringify({action: 'updateUser', dataset: data})))
+  },
+  telegram
 })
 app.init()
 

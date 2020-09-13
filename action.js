@@ -1,7 +1,6 @@
 "use strict";
 
 const fetch = require('./fetch')
-const telegram = require('./telegram')
 
 const actionTypes = [
   {
@@ -11,11 +10,17 @@ const actionTypes = [
     params: userId => ({names: [`Player:${userId}`]}),
     getData: data => data.cache[0].data,
     callback: data => {
-      console.log(data)
-      const villages = data.villages
-
-      telegram.alert(villages.map(({villageId, name, storage, storageCapacity}) => ({villageId, name, storage, storageCapacity})))
+      // @ToDo: update villages to db
+      // telegram.alert(data.villages.map(({villageId, name, storage, storageCapacity}) => ({villageId, name, storage, storageCapacity})))
     }
+  },
+  {
+    typeName: 'getAttacks',
+    constroller: 'village',
+    action: 'getKingdomVillageAttacks',
+    params: () => ({}),
+    getData: data => data.cache,
+    callback: data => {}
   }
 ]
 

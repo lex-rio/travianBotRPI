@@ -1,11 +1,11 @@
 const stack = require('./stack')
 const {addRowToTable, deleteFromTable, getOneFromTable, db} = require('./db')
 const Action = require('./action')
-const telegram = require('./telegram')
 
 class App {
 
-  constructor (transport) {
+  constructor ({transport, telegram}) {
+    this.telegram = telegram
     this.transport = transport || {broadcast: _ => _}
     this.intervals = {}
     this.schemas = {}
@@ -13,14 +13,14 @@ class App {
   }
 
   init() {
-    db.all(`PRAGMA table_info(users)`, [], (err, rows) => err ? telegram.alert(err) : this.schemas.user = rows)
+    db.all(`PRAGMA table_info(users)`, [], (err, rows) => err ? this.telegram.alert(err) : this.schemas.user = rows)
     db.all(
       `SELECT * FROM users
       LEFT JOIN villages USING (userId)
       LEFT JOIN actions USING (userId)`,
       [],
       (err, rows) => {
-        err ? telegram.alert(err) : this.initialData.users = rows
+        err ? this.telegram.alert(err) : this.initialData.users = rows
         this.initActions(rows)
       }
     )
@@ -39,6 +39,7 @@ class App {
 
   async addUser(data) {
     const user = await addRowToTable('users', data)
+    // add get storages status action
     const {id} = await addRowToTable('actions', {userId: user.id, period: 60})
     const actionData = {
       ...user,
