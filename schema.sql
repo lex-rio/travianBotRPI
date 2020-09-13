@@ -1,23 +1,24 @@
 create table users (
-  id      integer not null primary key,
-  session text    not null,
-  chatId  text    not null,
-  name    text,
+  userId    integer not null primary key,
+  session   text    not null,
+  chatId    text    not null,
+  userName  text,
   --
-  unique(id)
+  unique(userId),
+  unique(session)
 );
 
 create table villages (
-  id      integer not null primary key,
-  userId  integer not null references users,
-  listId  integer not null,
-  name    text    not null,
+  villageId   integer not null primary key,
+  userId      integer not null references users,
+  listId      integer not null,
+  villageName text    not null,
   --
-  unique(id)
+  unique(villageId)
 );
 
 create table actions (
-  id          integer not null primary key autoincrement,
+  actionId    integer not null primary key autoincrement,
   userId      integer not null references users,
   priority    integer not null DEFAULT 0,
   type        integer not null DEFAULT 0,

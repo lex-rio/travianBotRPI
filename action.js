@@ -9,12 +9,18 @@ const actionTypes = [
     controller: 'cache',
     action: 'get',
     params: userId => ({names: [`Player:${userId}`]}),
-    getData: data => data.cache[0].data.villages.map(({villageId, name, storage}) => ({villageId, name, storage, storageCapacity}))
+    getData: data => data.cache[0].data,
+    callback: data => {
+      console.log(data)
+      const villages = data.villages
+
+      telegram.alert(villages.map(({villageId, name, storage, storageCapacity}) => ({villageId, name, storage, storageCapacity})))
+    }
   }
 ]
 
 class Action {
-  constructor({session, type, userId, period, time, priority}, {callback}) {
+  constructor({session, type, userId, period, time, priority}, callbacks = []) {
     this.session = session
     this.time = time
     this.userId = userId
@@ -24,8 +30,8 @@ class Action {
     this.action = actionTypes[type].action
     this.params = actionTypes[type].params
     this.getData = actionTypes[type].getData
-    this.callback = callback
-    this.errorCallback = error => telegram.log('-486239249', {error})
+    this.callbacks = [actionTypes[type].callback, ...callbacks]
+    this.errorCallback = telegram.alert
   }
 
   run () {
@@ -40,8 +46,8 @@ class Action {
       {
         controller: this.controller,
         action: this.action,
-        params: this.params,//{names: ["Player:853"]},
-        session: this.session//"6c7c1b981cee778cad62"
+        params: this.params(this.userId),
+        session: this.session
       }
     )
   }

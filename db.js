@@ -34,4 +34,4 @@ const getOneFromTable = (table, condition) => {
   })
 }
 
-module.exports = {addRowToTable, deleteFromTable, getOneFromTable}
+module.exports = {addRowToTable, deleteFromTable, getOneFromTable, db}

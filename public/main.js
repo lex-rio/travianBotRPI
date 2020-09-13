@@ -5,12 +5,12 @@ const app = {
   send: function(data) {
     this.ws.send(JSON.stringify(data))
   },
-  init: function ({users, userSchema}) {
-    this.renderUsers(users)
-    usersForm.innerHTML = this.generateForm(userSchema, 'User')
+  init: function ({initialData, schemas}) {
+    this.renderUsers(initialData.users)
+    usersForm.innerHTML = this.generateForm(schemas.user, 'User')
   },
   renderUsers: function (users) {
-    usersContainer.innerHTML = users.map(({name, id}) => `<div>${name} <a href="#" onclick="app.deleteUser(${id})">✘</a></div>`).join('')
+    usersContainer.innerHTML = users.map(({userName, id}) => `<div>${userName} <a href="#" onclick="app.deleteUser(${id})">✘</a></div>`).join('')
   },
   generateForm: (schema, entity) => {
     return '<form>' + 

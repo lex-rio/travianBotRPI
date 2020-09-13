@@ -28,13 +28,19 @@ const wss = new WebSocket.Server({
   autoAcceptConnections: false
 })
 
-const app = new App()
+const app = new App({
+  broadcast: data => wss.clients.forEach(client => client.send(JSON.stringify({data})))
+})
 app.init()
 
 wss.on('connection', async ws => {
-  app.initContext()
-    .then(dataset => ws.send(JSON.stringify({action: 'init', dataset})))
-    .catch(console.error)
+  ws.send(JSON.stringify({
+    action: 'init',
+    dataset: {
+      initialData: app.initialData,
+      schemas: app.schemas
+    }
+  }))
 
   ws.on('message', message => {
     const {action, data} = JSON.parse(message)
@@ -51,35 +57,3 @@ wss.on('connection', async ws => {
   })
   ws.on('close', message => console.log('man leaved'))
 })
-
-// const options = {
-//   hostname: 'ru4.kingdoms.com',
-//   port: 443,
-//   path: '/api/?c=ranking&a=getKingdomVictoryPointsWithTreasures',
-//   method: 'POST',
-//   headers: {
-//     'Content-Type': 'application/json'
-//   }
-// }
-
-// // const postData = {controller:"ranking",action:"getKingdomVictoryPointsWithTreasures",params:{start:0, end: 20},session:"6c7c1b981cee778cad62"}
-
-// const postData = {
-//   controller: "cache",
-//   action: "get",
-//   params: {
-//     names: ["Player:853"]
-//   },
-//   "session":"6c7c1b981cee778cad62"
-// }
-
-
-// setInterval(() => {
-//   stack.push({
-//     time: '',
-//     priority: 0,
-//     getData: data => data.cache[0].data.villages.map(({villageId, name, storage, storageCapacity}) => ({villageId, name, storage, storageCapacity})),
-//     // getData: data => data.response.results,
-//     run: () => fetch(options, postData)
-//   })
-// }, 5000)
