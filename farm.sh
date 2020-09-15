@@ -1,1 +1,1 @@
-node -r dotenv/config ./farm.js
+node -r dotenv/config ./index.js
