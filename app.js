@@ -5,6 +5,7 @@ const Action = require('./action')
 class App {
 
   constructor ({transport, telegram}) {
+    this.runningActions = []
     this.telegram = telegram
     this.transport = transport || {broadcast: _ => _}
     this.intervals = {}
@@ -26,15 +27,15 @@ class App {
     )
   }
 
-  initActions(actions) {
-    actions.map(actionData => {
-      if (!actionData.period) {
-        return
-      }
-      const action = new Action(actionData, [this.transport.broadcast])
-      stack.push(action)
-      setInterval(() => stack.push(action), action.period * 1000)
-    })
+  initActions(actions = []) {
+    this.runningActions = actions
+      .filter(({period}) => period)
+      .map(actionData => {
+        const action = new Action(actionData, [this.transport.broadcast])
+        stack.push(action)
+        setInterval(() => stack.push(action), action.period * 1000)
+        return action
+      })
   }
 
   async addUser(data) {

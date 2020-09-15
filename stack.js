@@ -10,8 +10,9 @@ setInterval(async () => {
     if (action.run && action.callbacks && action.getData) {
       const response = await action.run()
       try {
+        action.lastResponse = action.getData(response)
         action.callbacks.map(
-          callback => callback(action.getData(response))
+          callback => callback(this.lastResponse)
         )
       } catch (e) {
         action.errorCallback({error: e, response})

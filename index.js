@@ -38,13 +38,9 @@ const app = new App({
 app.init()
 
 wss.on('connection', async ws => {
-  ws.send(JSON.stringify({
-    action: 'init',
-    dataset: {
-      initialData: app.initialData,
-      schemas: app.schemas
-    }
-  }))
+  ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, schemas: app.schemas}}))
+
+  app.runningActions.map(action => ws.send(JSON.stringify({action: 'updateUser', dataset: action.lastResponse})))
 
   ws.on('message', message => {
     const {action, data} = JSON.parse(message)

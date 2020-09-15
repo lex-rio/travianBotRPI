@@ -27,9 +27,9 @@ const actionTypes = [
 
 class Action {
   constructor({session, type, userId, period, time, priority}, callbacks = []) {
-    this.session = session
+    this.lastResponse = ''
+    this.user = {session, userId}
     this.time = time
-    this.userId = userId
     this.priority = priority
     this.period = period
     this.controller = actionTypes[type].controller
@@ -52,8 +52,8 @@ class Action {
       {
         controller: this.controller,
         action: this.action,
-        params: this.params(this.userId),
-        session: this.session
+        params: this.params(this.user.userId),
+        session: this.user.session
       }
     )
   }
