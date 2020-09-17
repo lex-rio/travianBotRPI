@@ -1,65 +1,65 @@
-const stack = require('./stack')
-const {addRowToTable, deleteFromTable, getOneFromTable, db} = require('./db')
-const Action = require('./action')
+"use strict"
+
+const {addRowsToTable, deleteFromTable, getOneFromTable} = require('./db')
+const actionFactory = require('./actions/factory')
 
 class App {
 
-  constructor ({transport, telegram}) {
+  constructor ({transport, logger, db}) {
     this.runningActions = []
-    this.telegram = telegram
+    this.logger = logger
     this.transport = transport || {broadcast: _ => _}
-    this.intervals = {}
     this.schemas = {}
     this.initialData = {}
-  }
-
-  init() {
-    db.all(`PRAGMA table_info(users)`, [], (err, rows) => err ? this.telegram.alert(err) : this.schemas.user = rows)
-    db.all(
-      `SELECT * FROM users
-      LEFT JOIN villages USING (userId)
-      LEFT JOIN actions USING (userId)`,
+    this.db = db
+    this.db.all(`PRAGMA table_info(users)`, [], (err, rows) => err ? this.logger.alert(err) : this.schemas.user = rows)
+    this.db.all(`SELECT * FROM users`, [], (err, rows) => err ? this.logger.alert(err) : this.initialData.users = rows)
+    this.db.all(
+      `SELECT * from actions LEFT JOIN villages USING (userId) LEFT JOIN users USING (userId)`,
       [],
-      (err, rows) => {
-        err ? this.telegram.alert(err) : this.initialData.users = rows
-        this.initActions(rows)
-      }
+      (err, rows) => err ? this.logger.alert(err) : this.initActions(rows)
     )
   }
 
   initActions(actions = []) {
-    this.runningActions = actions
-      .filter(({period}) => period)
-      .map(actionData => {
-        const action = new Action(actionData, [this.transport.broadcast])
-        stack.push(action)
-        setInterval(() => stack.push(action), action.period * 1000)
-        return action
-      })
+    actions.map(actionData => {
+      this.runningActions.push(
+        actionFactory(actionData, {success: this.transport.broadcast, error: this.logger.alert})
+      )
+    })
   }
 
   async addUser(data) {
-    const user = await addRowToTable('users', data)
-    // add get storages status action
-    const {id} = await addRowToTable('actions', {userId: user.id, period: 60})
-    const actionData = {
-      ...user,
-      ...(await getOneFromTable('actions', {actionId: id}))
-    }
-    const action = new Action(actionData)
-    stack.push(action)
-    setInterval(() => stack.push(action), action.period * 1000)
+    const [user] = await addRowsToTable('users', [data])
+    const actions = await addRowsToTable('actions', [
+      {userId: user.userId, period: 60},
+      {userId: user.userId, period: 120, type: 1}
+    ])
+    this.initActions(actions.map(action => ({...action, ...user})))
     return user
   }
 
-  deleteUser({id}) {
-    deleteFromTable('users', {id})
-    deleteFromTable('villages', {userId: id})
-    deleteFromTable('actions', {userId: id})
+  async deleteUser(cond) {
+    if (!cond) return
+    this.initialData.users = this.initialData.users.filter(({userId}) => userId !== cond.userId)
+    this.runningActions = this.runningActions.filter(action => {
+      if (action.userId === cond.userId) {
+        action.stop()
+      }
+      return action.userId !== cond.userId
+    })
+    await Promise.all([
+      deleteFromTable('users', cond),
+      deleteFromTable('villages', cond),
+      deleteFromTable('actions', cond),
+    ])
+    return cond
   }
 
-  addAction(data) {
-    return addRowToTable('actions', data)
+  async addAction(data) {
+    const {id} = await addRowsToTable('actions', [data])
+    this.initActions([{...(await getOneFromTable('actions', {actionId: id}))}])
+    return id
   }
 }
 

@@ -7,15 +7,12 @@ setInterval(async () => {
   console.log({stack: stack.length})
   let action
   while (action = stack.pop()) {
-    if (action.run && action.callbacks && action.getData) {
+    if (action.run && action.callback) {
       const response = await action.run()
       try {
-        action.lastResponse = action.getData(response)
-        action.callbacks.map(
-          callback => callback(this.lastResponse)
-        )
+        action.callback(response)
       } catch (e) {
-        action.errorCallback({error: e, response})
+        action.error({error: e, response})
       }
     }
   }

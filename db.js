@@ -1,37 +1,38 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./database.sqlite', console.error)
 
-const addRowToTable = (table, data) => {
-  return new Promise((resolve, reject) => {
-    const keys = Object.keys(data)
-    db.run(
-      `INSERT INTO ${table} (${keys.join(',')}) VALUES (${'?,'.repeat(keys.length).slice(0,-1)})`,
-      Object.values(data),
-      function (err) {
-        err ? reject(err) : resolve({...data, ...{id: this.lastID}})
-      }
-    )
-  })
-}
-const deleteFromTable = (table, condition) => {
-  return new Promise((resolve, reject) => {
-    const keys = Object.keys(condition)
+const addRowsToTable = (table, data = []) =>
+  Promise.all(data.map(row =>
+    new Promise((resolve, reject) => {
+      const keys = Object.keys(row)
+      db.run(
+        `INSERT INTO ${table} (${keys.join(',')}) VALUES (${'?,'.repeat(keys.length).slice(0,-1)})`,
+        Object.values(row),
+        function(err) {
+          const cond = {}
+          cond[table.slice(0, -1) + 'Id'] = this.lastID
+          err ? reject(err) : getOneFromTable(table, cond).then(resolve).catch(reject)
+        }
+      )
+    })
+  ))
+
+const deleteFromTable = (table, condition) =>
+  new Promise((resolve, reject) => {
     db.run(
       `DELETE FROM ${table} WHERE ${Object.keys(condition).map(key => key + ' = ?').join(',')}`,
       Object.values(condition),
       err => err ? reject(err) : resolve(condition)
     )
   })
-}
-const getOneFromTable = (table, condition) => {
-  return new Promise((resolve, reject) => {
-    const keys = Object.keys(condition)
+
+const getOneFromTable = (table, condition) =>
+  new Promise((resolve, reject) => {
     db.get(
       `SELECT *  FROM ${table} WHERE ${Object.keys(condition).map(key => key + ' = ?').join(',')}`,
       Object.values(condition),
       (err, data) => err ? reject(err) : resolve(data)
     )
   })
-}
 
-module.exports = {addRowToTable, deleteFromTable, getOneFromTable, db}
+module.exports = {addRowsToTable, deleteFromTable, getOneFromTable, db}

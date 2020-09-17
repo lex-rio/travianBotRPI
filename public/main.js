@@ -1,47 +1,62 @@
+"use strict";
+
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
 const app = {
+
   ws: new WebSocket(`ws://${window.location.hostname}:8082`),
-  send: function(data) {
-    this.ws.send(JSON.stringify(data))
-  },
-  init: function ({initialData, schemas}) {
-    this.renderUsers(initialData.users)
+
+  send (action, data) {this.ws.send(JSON.stringify({action, data}))},
+
+  init ({initialData, schemas}) {
+    initialData.users.map(this.addUser)
     usersForm.innerHTML = this.generateForm(schemas.user, 'User')
   },
-  renderUsers: function (users) {
-    usersContainer.innerHTML = users.map(({userName, userId}) => `<div id="user-${userId}">
-      ${userName} 
-      <a href="#" onclick="app.deleteUser(${userId})">✘</a>
-      <div class="villages"></div>
-    </div>`).join('')
+
+  addUser ({userName, userId}) {
+    const userContainer = document.createElement('div')
+    userContainer.setAttribute('id', `user-${userId}`)
+    userContainer.innerHTML = `${userName} <a href="#" onclick="app.send('deleteUser', {userId: ${userId}})">✘</a><div class="villages"></div>`
+    usersContainer.appendChild(userContainer)
   },
-  generateForm: (schema, entity) => {
+
+  generateForm (schema, entity) {
     return '<form>' + 
       schema.map(({name}) => `<input type="text" name="${name}" placeholder="${name}">`).join('') +
-      `<input type="button" value="add" onclick="app.add${entity}(Object.fromEntries(new FormData(this.closest(\'form\'))))">` +
+      `<input type="button" value="add" onclick="app.send('add${entity}', Object.fromEntries(new FormData(this.closest(\'form\'))))">` +
     '<form>'
   },
-  addUser: function(user) {
-    this.send({action: 'addUser', data: user})
+
+  deleteUser ({userId}) {
+    const userBlock = document.getElementById(`user-${userId}`)
+    userBlock.parentNode.removeChild(userBlock)
   },
-  deleteUser: function(id) {
-    this.send({action: 'deleteUser', data: {id}})
-  },
-  updateUser: (data) => {
+
+  updateUser (data) {
     const userBlock = document.getElementById(`user-${data.playerId}`)
     const villagesBlock = userBlock.getElementsByClassName('villages')[0]
     villagesBlock.innerHTML = data.villages.map(village => `<div id="village-${village.villageId}">
-      ${village.name} - <span><progress value="${village.storage[1]}" max="${village.storageCapacity[1]}"></progress></span>
-      <span><progress value="${village.storage[2]}" max="${village.storageCapacity[2]}"></progress></span>
-      <span><progress value="${village.storage[3]}" max="${village.storageCapacity[3]}"></progress></span>
-      <span><progress value="${village.storage[4]}" max="${village.storageCapacity[4]}"></progress></span>
-    <div>`).join('')
+      ${village.name} - ${[1,2,3,4].map(resourseId => this.renderResourses(village, resourseId)).join('')}
+    </div>`).join('')
     userBlock.appendChild(villagesBlock)
+  },
+
+  renderResourses (village, resourseId) {
+    return `<div class="resourse">
+              <progress 
+                title="${Math.floor(village.storage[resourseId])}/${village.storageCapacity[resourseId]}" 
+                value="${Math.floor(village.storage[resourseId])}" 
+                max="${village.storageCapacity[resourseId]}"></progress>
+              <br>
+              ${village.production[resourseId]}
+            </div>`
+  },
+
+  updateUserAttacks (data) {
+    console.log(data)
   }
 }
 app.ws.onmessage = ({data}) => {
   const {action, dataset} = JSON.parse(data)
   app[action](dataset)
 }
-const addUser = user => app.send({action: 'addUser', data: user})

@@ -5,6 +5,7 @@ const fs = require('fs')
 const WebSocket = require('ws')
 const App = require('./app')
 const telegram = require('./telegram')
+const {db} = require('./db')
 
 // serve static
 const staticFilesBinnary = fs.readdirSync('./public')
@@ -30,17 +31,18 @@ const wss = new WebSocket.Server({
 })
 
 const app = new App({
-  transport: {
-    broadcast: data => wss.clients.forEach(client => client.send(JSON.stringify({action: 'updateUser', dataset: data})))
-  },
-  telegram
+  transport: {broadcast: action => wss.clients.forEach(client => client.send(JSON.stringify({
+    action: action.actionName,
+    dataset: action.lastResponse
+  })))},
+  logger: telegram,
+  db
 })
-app.init()
 
 wss.on('connection', async ws => {
   ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, schemas: app.schemas}}))
 
-  app.runningActions.map(action => ws.send(JSON.stringify({action: 'updateUser', dataset: action.lastResponse})))
+  app.runningActions.map(action => ws.send(JSON.stringify({action: action.actionName, dataset: action.lastResponse})))
 
   ws.on('message', message => {
     const {action, data} = JSON.parse(message)
@@ -48,9 +50,9 @@ wss.on('connection', async ws => {
       return ws.send((`invalid request ${action}`))
     }
     app[action](data)
-      .then(data => wss.clients.forEach(client => {
+      .then(dataset => wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({action, data}))
+          client.send(JSON.stringify({action, dataset}))
         }
       }))
       .catch(console.error)
