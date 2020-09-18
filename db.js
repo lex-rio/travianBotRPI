@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./database.sqlite', console.error)
 
-const addRowsToTable = (table, data = []) =>
+const add = (table, data = []) =>
   Promise.all(data.map(row =>
     new Promise((resolve, reject) => {
       const keys = Object.keys(row)
@@ -17,7 +17,7 @@ const addRowsToTable = (table, data = []) =>
     })
   ))
 
-const deleteFromTable = (table, condition) =>
+const remove = (table, condition) =>
   new Promise((resolve, reject) => {
     db.run(
       `DELETE FROM ${table} WHERE ${Object.keys(condition).map(key => key + ' = ?').join(',')}`,
@@ -26,13 +26,23 @@ const deleteFromTable = (table, condition) =>
     )
   })
 
-const getOneFromTable = (table, condition) =>
+const getOne = (table, condition) =>
   new Promise((resolve, reject) => {
     db.get(
-      `SELECT *  FROM ${table} WHERE ${Object.keys(condition).map(key => key + ' = ?').join(',')}`,
+      `SELECT * FROM ${table} WHERE ${Object.keys(condition).map(key => key + ' = ?').join(' AND ')}`,
       Object.values(condition),
       (err, data) => err ? reject(err) : resolve(data)
     )
   })
 
-module.exports = {addRowsToTable, deleteFromTable, getOneFromTable, db}
+const update = (table, condition, data) =>
+  new Promise((resolve, reject) => {
+    const set = Object.keys(data)
+    db.get(
+      `UPDATE ${table} SET ${Object.keys(data).map(key => key + ' = ?').join(',')} WHERE ${Object.keys(condition).map(key => key + ' = ?').join(' AND ')}`,
+      [...Object.values(data), ...Object.values(condition)],
+      (err, data) => err ? reject(err) : resolve(data)
+    )
+  })
+
+module.exports = {add, remove, getOne, update, db}

@@ -6,7 +6,8 @@ class UpdateUserAction extends Action {
 
   constructor(data, callbacks) {
     super(data, callbacks)
-    this.actionName = 'updateUser'
+    this.userName = data.userName
+    this.actionName = 'updateUserData'
     this.controller = 'cache'
     this.action = 'get'
     this.params = userId => ({names: [`Player:${userId}`]})
@@ -15,6 +16,9 @@ class UpdateUserAction extends Action {
 
   callback (data) {
     super.callback(data)
+    if (this.lastResponse.name !== this.userName) {
+      this.userName = this.lastResponse.name
+    }
   }
 }
 

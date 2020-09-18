@@ -49,7 +49,7 @@ class Action {
       {
         hostname: process.env.KINGDOMS_HOST,
         port: 443,
-        path: `/api/?c=${this.controller}&a=${this.action}`,
+        path: `/api/?c=${this.controller}&a=${this.action}&t${+(new Date())}`,
         method: 'POST',
         headers: {'Content-Type': 'application/json'}
       },

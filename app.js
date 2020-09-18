@@ -1,6 +1,6 @@
 "use strict"
 
-const {addRowsToTable, deleteFromTable, getOneFromTable} = require('./db')
+const {add, remove, getOne, update} = require('./db')
 const actionFactory = require('./actions/factory')
 
 class App {
@@ -30,13 +30,17 @@ class App {
   }
 
   async addUser(data) {
-    const [user] = await addRowsToTable('users', [data])
-    const actions = await addRowsToTable('actions', [
+    const [user] = await add('users', [data])
+    const actions = await add('actions', [
       {userId: user.userId, period: 60},
       {userId: user.userId, period: 120, type: 1}
     ])
     this.initActions(actions.map(action => ({...action, ...user})))
     return user
+  }
+
+  updateUser (data) {
+    return update('user', {userId: data.userId}, data)
   }
 
   async deleteUser(cond) {
@@ -49,16 +53,16 @@ class App {
       return action.userId !== cond.userId
     })
     await Promise.all([
-      deleteFromTable('users', cond),
-      deleteFromTable('villages', cond),
-      deleteFromTable('actions', cond),
+      remove('users', cond),
+      remove('villages', cond),
+      remove('actions', cond),
     ])
     return cond
   }
 
   async addAction(data) {
     const {id} = await addRowsToTable('actions', [data])
-    this.initActions([{...(await getOneFromTable('actions', {actionId: id}))}])
+    this.initActions([{...(await getOne('actions', {actionId: id}))}])
     return id
   }
 }
