@@ -13,7 +13,8 @@ const app = {
       userContainer.innerHTML = `<b class="name">${user.userName}</b>
         <a href="#" onclick="app.updateUserForm(${user.userId})">🖉</a>
         <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})">✘</a>
-        <div class="villages"></div>`
+        <div class="villages"></div>
+        <div class="error"></div>`
       usersContainer.appendChild(userContainer)
       return true
     },
@@ -29,7 +30,7 @@ const app = {
 
   send (action, data) {this.ws.send(JSON.stringify({action, data}))},
 
-  init ({initialData, schemas, types}) {
+  init (error, {initialData, schemas, types}) {
     console.log(types)
     initialData.users.map(user => this.users[user.userId] = user)
     usersForm.innerHTML = this.generateForm(schemas.user, 'User')
@@ -50,23 +51,28 @@ const app = {
     '<form>'
   },
 
-  deleteUser ({userId}) {
+  deleteUser (error, {userId}) {
     delete this.users[userId]
   },
 
-  updateUser (data) {
+  updateUser (error, data) {
     this.users[data.userId] = data
   },
 
-  addUser (data) {
+  addUser (error, data) {
     this.users[data.userId] = data
   },
 
-  updateUserData (data) {
-    const userBlock = document.getElementById(`user-${data.playerId}`)
-    userBlock.getElementsByClassName('name')[0].innerHTML = data.name
+  updateUserData (error, {userId, name, villages}) {
+    const userBlock = document.getElementById(`user-${userId}`)
+    if (error) {
+      return userBlock.getElementsByClassName('error')[0].innerHTML = error
+    }
+    if (name) {
+      userBlock.getElementsByClassName('name')[0].innerHTML = name
+    }
     const villagesBlock = userBlock.getElementsByClassName('villages')[0]
-    villagesBlock.innerHTML = data.villages.map(village => `<div id="village-${village.villageId}">
+    villagesBlock.innerHTML = villages.map(village => `<div id="village-${village.villageId}">
       ${village.name} - ${[1,2,3,4].map(resourseId => this.renderResourses(village, resourseId)).join('')}
     </div>`).join('')
     userBlock.appendChild(villagesBlock)
@@ -88,6 +94,6 @@ const app = {
   }
 }
 app.ws.onmessage = ({data}) => {
-  const {action, dataset} = JSON.parse(data)
-  app[action](dataset)
+  const {action, dataset, error} = JSON.parse(data)
+  app[action](error, dataset)
 }

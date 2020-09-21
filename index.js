@@ -31,10 +31,16 @@ const wss = new WebSocket.Server({
 })
 
 const app = new App({
-  transport: {broadcast: action => wss.clients.forEach(client => client.send(JSON.stringify({
-    action: action.actionName,
-    dataset: action.lastResponse
-  })))},
+  transport: {
+    broadcast: action =>
+      wss.clients.forEach(client => {
+        client.send(JSON.stringify({
+          action: action.actionName,
+          dataset: {...action.lastResponse, userId: action.userId, updatedAt: action.updatedAt},
+          error: action.lastError
+        }))
+      })
+  },
   logger: telegram,
   db
 })
@@ -42,7 +48,13 @@ const app = new App({
 wss.on('connection', async ws => {
   ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, schemas: app.schemas, types: app.types}}))
 
-  app.runningActions.map(action => ws.send(JSON.stringify({action: action.actionName, dataset: action.lastResponse})))
+  app.runningActions.map(action => {
+    ws.send(JSON.stringify({
+      action: action.actionName,
+      dataset: {...action.lastResponse, userId: action.userId, updatedAt: action.updatedAt},
+      error: action.lastError
+    }))
+  })
 
   ws.on('message', message => {
     const {action, data} = JSON.parse(message)

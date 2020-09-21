@@ -32,13 +32,6 @@ class Action {
     }
   }
 
-  callback (data) {
-    this.lastResponse = this.getData(data)
-    this.updatedAt = +(new Date())
-    console.log(this.actionName, this.userId)
-    this.success(this)
-  }
-
   stop () {
     console.log(`action for user ${this.userId} was stopped`)
     clearInterval(this.intervalId)
@@ -62,10 +55,16 @@ class Action {
           session: this.session
         }
       )
-      this.callback(response)
+      if (response.error) {
+        throw new Error(response.error.message)
+      }
+      this.lastResponse = this.getData(response)
+      this.updatedAt = +(new Date())
     } catch (e) {
-      this.error({error: e, response, env: 'laptop', userId: this.userId})
+      this.lastError = e.message
+      this.error({error: e, response, userId: this.userId})
     }
+    this.success(this)
   }
 }
 

@@ -4,14 +4,20 @@
 <meta charset="utf-8"/>
 <link rel="stylesheet" href="/main.css">
 <!--<script type="text/javascript" src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>-->
+<script src="https://unpkg.com/vue@next"></script>
 <title>multy travian</title>
 </head>
 <body>
+<div id="app"></div>
 <div id="main"></div>
 <div id="users"></div>
 <div id="usersForm"></div>
 <script src="/main.js"></script>
 <script>
+const vm = Vue.createApp({
+  data: () => ({foo: 'foo'}),
+  template: `<p>{{ foo }}</p><button @click="foo = 'baz'">Change it</button>`,
+}).mount('#app')
 
 //const lineDiv = document.getElementById('myChart')
 
