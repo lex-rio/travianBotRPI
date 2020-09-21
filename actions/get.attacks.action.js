@@ -2,7 +2,7 @@
 
 const Action = require('./action')
 
-class GetAttacsAction extends Action {
+class GetAttacksAction extends Action {
   constructor(data, callbacks = []) {
     super(data, callbacks)
 
@@ -18,4 +18,4 @@ class GetAttacsAction extends Action {
   }
 }
 
-module.exports = GetAttacsAction
+module.exports = GetAttacksAction

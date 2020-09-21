@@ -19,7 +19,7 @@ const app = {
     },
     deleteProperty: (target, prop) => {
       delete target[prop]
-      const userBlock = document.getElementById(`user-${userId}`)
+      const userBlock = document.getElementById(`user-${prop}`)
       userBlock.parentNode.removeChild(userBlock)
       return true
     }
@@ -29,7 +29,8 @@ const app = {
 
   send (action, data) {this.ws.send(JSON.stringify({action, data}))},
 
-  init ({initialData, schemas}) {
+  init ({initialData, schemas, types}) {
+    console.log(types)
     initialData.users.map(user => this.users[user.userId] = user)
     usersForm.innerHTML = this.generateForm(schemas.user, 'User')
   },
@@ -44,7 +45,7 @@ const app = {
 
   generateForm (schema, entity) {
     return '<form>' + 
-      schema.map(({name}) => `<input type="text" name="${name}" placeholder="${name}">`).join('') +
+      schema.map(({name}) => `<label>${name}<input type="text" name="${name}" placeholder="${name}"></label>`).join('') +
       `<input type="button" value="add" onclick="app.send('add${entity}', Object.fromEntries(new FormData(this.closest(\'form\'))))">` +
     '<form>'
   },
@@ -54,6 +55,10 @@ const app = {
   },
 
   updateUser (data) {
+    this.users[data.userId] = data
+  },
+
+  addUser (data) {
     this.users[data.userId] = data
   },
 

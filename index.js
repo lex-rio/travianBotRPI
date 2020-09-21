@@ -40,7 +40,7 @@ const app = new App({
 })
 
 wss.on('connection', async ws => {
-  ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, schemas: app.schemas}}))
+  ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, schemas: app.schemas, types: app.types}}))
 
   app.runningActions.map(action => ws.send(JSON.stringify({action: action.actionName, dataset: action.lastResponse})))
 

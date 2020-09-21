@@ -44,22 +44,28 @@ class Action {
     clearInterval(this.intervalId)
   }
 
-  run () {
-    return fetch(
-      {
-        hostname: process.env.KINGDOMS_HOST,
-        port: 443,
-        path: `/api/?c=${this.controller}&a=${this.action}&t${+(new Date())}`,
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'}
-      },
-      {
-        controller: this.controller,
-        action: this.action,
-        params: this.params(this.userId),
-        session: this.session
-      }
-    )
+  async run () {
+    let response
+    try {
+      response = await fetch(
+        {
+          hostname: process.env.KINGDOMS_HOST,
+          port: 443,
+          path: `/api/?c=${this.controller}&a=${this.action}&t${+(new Date())}`,
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'}
+        },
+        {
+          controller: this.controller,
+          action: this.action,
+          params: this.params(this.userId),
+          session: this.session
+        }
+      )
+      this.callback(response)
+    } catch (e) {
+      this.error({error: e, response, env: 'laptop', userId: this.userId})
+    }
   }
 }
 

@@ -11,7 +11,7 @@ const add = (table, data = []) =>
         function(err) {
           const cond = {}
           cond[table.slice(0, -1) + 'Id'] = this.lastID
-          err ? reject(err) : getOneFromTable(table, cond).then(resolve).catch(reject)
+          err ? reject(err) : getOne(table, cond).then(resolve).catch(reject)
         }
       )
     })

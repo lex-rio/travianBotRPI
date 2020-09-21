@@ -1,7 +1,7 @@
 "use strict"
 
-const {add, remove, getOne, update} = require('./db')
-const actionFactory = require('./actions/factory')
+const { add, remove, getOne, update } = require('./db')
+const { actionFactory, types } = require('./actions/factory')
 
 class App {
 
@@ -9,6 +9,7 @@ class App {
     this.runningActions = []
     this.logger = logger
     this.transport = transport || {broadcast: _ => _}
+    this.types = types
     this.schemas = {}
     this.initialData = {}
     this.db = db
@@ -35,6 +36,7 @@ class App {
       {userId: user.userId, period: 60},
       {userId: user.userId, period: 120, type: 1}
     ])
+    this.initialData.users.push(user)
     this.initActions(actions.map(action => ({...action, ...user})))
     return user
   }
