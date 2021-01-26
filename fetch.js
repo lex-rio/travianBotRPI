@@ -2,7 +2,16 @@
 
 const https = require("https")
 
-module.exports = (options, postData) => {
+module.exports = (uri, postData) => {
+  const options = {
+    hostname: process.env.KINGDOMS_HOST,
+    port: 443,
+    path: uri,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
   return new Promise((resolve, reject) => {
     const req = https.request(options, resp => {
       let data = ''

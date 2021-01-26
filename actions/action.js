@@ -40,21 +40,12 @@ class Action {
   async run () {
     let response
     try {
-      response = await fetch(
-        {
-          hostname: process.env.KINGDOMS_HOST,
-          port: 443,
-          path: `/api/?c=${this.controller}&a=${this.action}&t${+(new Date())}`,
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'}
-        },
-        {
-          controller: this.controller,
-          action: this.action,
-          params: this.params(this.userId),
-          session: this.session
-        }
-      )
+      response = await fetch(`/api/?c=${this.controller}&a=${this.action}&t${+(new Date())}`, {
+        controller: this.controller,
+        action: this.action,
+        params: this.params(this.userId),
+        session: this.session
+      })
       if (response.error) {
         throw new Error(response.error.message)
       }

@@ -3,20 +3,8 @@
 const telegram = require('./telegram')
 const fetch = require('./fetch')
 
-const options = {
-  hostname: 'ru4.kingdoms.com',
-  port: 443,
-  path: '/api/?c=cache&a=get',
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-}
-
-// telegram.getMessages().then(console.log)
-
 setInterval(() => {
-  fetch(options, {
+  fetch('/api/?c=cache&a=get', {
     "controller":"cache",
     "action":"get",
     "params": {

@@ -3,15 +3,6 @@
 const telegram = require('./telegram')
 const fetch = require('./fetch')
 const playersFarmLists = require('./farmLists.json')
-const options = {
-  hostname: 'ru4.kingdoms.com',
-  port: 443,
-  path: '/api/?c=troops&a=startPartialFarmListRaid',
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-}
 
 const sendFarm = ({village, player}) => {
   const postData = {
@@ -23,7 +14,7 @@ const sendFarm = ({village, player}) => {
     },
     "session": player.session
   }
-  fetch(options, postData).then(data => {
+  fetch('/api/?c=troops&a=startPartialFarmListRaid', postData).then(data => {
     if (data.error || !data.cache) {
       throw data.error || 'empty response'
     }
@@ -37,7 +28,11 @@ playersFarmLists.map(player => {
   player.villages.map(village => {
     sendFarm({village, player})
     setInterval(
-      () => sendFarm({village, player}),
+      () => {
+        serTimeout(() => {
+          sendFarm({village, player})
+        }, Math.floor(Math.random() * Math.floor(100)))
+      },
       village.period * 60000
     )
   })

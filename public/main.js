@@ -32,7 +32,7 @@ const app = {
 
   init (error, {initialData, schemas, types}) {
     console.log(types)
-    initialData.users.map(user => this.users[user.userId] = user)
+    initialData.users.map(user => {console.log(user); this.users[user.userId] = user})
     usersForm.innerHTML = this.generateForm(schemas.user, 'User')
   },
 
@@ -41,7 +41,8 @@ const app = {
     list.forEach(input => input.value = this.users[userId][input.name])
     const button = document.querySelector('[type="button"]')
     button.value = 'save'
-    button.onclick = e => this.updateUser( Object.fromEntries(new FormData(e.target.closest('form'))) )
+    button.onclick = e =>
+      this.send( 'updateUser', Object.fromEntries(new FormData(e.target.closest('form'))) )
   },
 
   generateForm (schema, entity) {
@@ -73,7 +74,7 @@ const app = {
     }
     const villagesBlock = userBlock.getElementsByClassName('villages')[0]
     villagesBlock.innerHTML = villages.map(village => `<div id="village-${village.villageId}">
-      ${village.name} - ${[1,2,3,4].map(resourseId => this.renderResourses(village, resourseId)).join('')}
+      ${village.name}(${village.population}) - ${[1,2,3,4].map(resourseId => this.renderResourses(village, resourseId)).join('')}
     </div>`).join('')
     userBlock.appendChild(villagesBlock)
   },
@@ -94,6 +95,12 @@ const app = {
   }
 }
 app.ws.onmessage = ({data}) => {
-  const {action, dataset, error} = JSON.parse(data)
-  app[action](error, dataset)
+  try {
+    const {action, dataset, error} = JSON.parse(data)
+    console.log(action)
+    app[action](error, dataset)
+  } catch (e) {
+    console.log(e.message)
+  }
+  
 }

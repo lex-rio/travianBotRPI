@@ -2,6 +2,7 @@
 
 const { add, remove, getOne, update } = require('./db')
 const { actionFactory, types } = require('./actions/factory')
+const { User } = require('./entities/user')
 
 class App {
 
@@ -14,18 +15,34 @@ class App {
     this.initialData = {}
     this.db = db
     this.db.all(`PRAGMA table_info(users)`, [], (err, rows) => err ? this.logger.alert(err) : this.schemas.user = rows)
-    this.db.all(`SELECT * FROM users`, [], (err, rows) => err ? this.logger.alert(err) : this.initialData.users = rows)
     this.db.all(
-      `SELECT * from actions LEFT JOIN villages USING (userId) LEFT JOIN users USING (userId)`,
+      `SELECT * from users 
+      LEFT JOIN actions USING (userId)`,
       [],
-      (err, rows) => err ? this.logger.alert(err) : this.initActions(rows)
+      (err, rows) => {
+        if (err) return this.logger.alert(err)
+        const users = rows.reduce((acc, action) => {
+          const index = acc.findIndex(u => u.userId === action.userId)
+          const user = index !== -1 ? acc[index] : new User(action)
+          user.actions.push(action)
+          if (index === -1) {
+            acc.push(user)
+          }
+          return acc
+        }, [])
+        this.initialData.users = users
+        this.initActions(rows)
+      }
     )
   }
 
   initActions(actions = []) {
     actions.map(actionData => {
       this.runningActions.push(
-        actionFactory(actionData, {success: this.transport.broadcast, error: this.logger.alert})
+        actionFactory(actionData, {
+          success: this.transport.broadcast,
+          error: this.logger.alert
+        })
       )
     })
   }
@@ -42,7 +59,10 @@ class App {
   }
 
   updateUser (data) {
-    return update('user', {userId: data.userId}, data)
+    // add('actions', [
+    //   {userId: data.userId, period: 120, type: 8}
+    // ])
+    return update('users', {userId: data.userId}, data)
   }
 
   async deleteUser(cond) {

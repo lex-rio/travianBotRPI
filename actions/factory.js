@@ -7,6 +7,7 @@ const SendMerchantsAction = require('./action')
 const SendAttackAction = require('./action')
 const SendSupportAction = require('./action')
 const AddToBuildQueAction = require('./action')
+const GetLastReportsAction = require('./get.last.reports.action')
 
 const types = {
   0: 'UpdateUserAction',
@@ -16,7 +17,8 @@ const types = {
   4: 'SendAttackAction',
   5: 'SendSupportAction',
   6: 'AddToBuildQueAction',
-  7: 'GetMessagesAction'
+  7: 'GetMessagesAction',
+  8: 'GetLastReportsAction'
 }
 const classes = {
   UpdateUserAction,
@@ -25,7 +27,8 @@ const classes = {
   SendMerchantsAction,
   SendAttackAction,
   SendSupportAction,
-  AddToBuildQueAction
+  AddToBuildQueAction,
+  GetLastReportsAction
 }
 
 const actionFactory = (actionData, callbacks) => new classes[types[actionData.type]](actionData, callbacks)
