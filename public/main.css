@@ -10,3 +10,7 @@ body {
   display: inline-block;
  
 }
+
+.villages>div:nth-child(odd){
+  background-color: aquamarine;
+}
