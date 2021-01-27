@@ -12,5 +12,5 @@ body {
 }
 
 .villages>div:nth-child(odd){
-  background-color: aquamarine;
+  background-color: aliceblue;
 }
