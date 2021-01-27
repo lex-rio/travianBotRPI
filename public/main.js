@@ -81,12 +81,13 @@ const app = {
 
   renderResourses (village, resourseId) {
     return `<div class="resourse">
+              <div>${Math.floor(village.storage[resourseId])}/${village.storageCapacity[resourseId]}</div>
               <progress 
                 title="${Math.floor(village.storage[resourseId])}/${village.storageCapacity[resourseId]}" 
                 value="${Math.floor(village.storage[resourseId])}" 
                 max="${village.storageCapacity[resourseId]}"></progress>
               <br>
-              ${village.production[resourseId]}
+              +${village.production[resourseId]}
             </div>`
   },
 

@@ -6,6 +6,7 @@ const WebSocket = require('ws')
 const App = require('./app')
 const telegram = require('./telegram')
 const {db} = require('./db')
+const { router } = require('./api')
 
 // serve static
 const staticFilesBinnary = fs.readdirSync('./public')
@@ -15,13 +16,18 @@ const staticFilesBinnary = fs.readdirSync('./public')
   }, {})
 
 const server = http.createServer((request, response) => {
-  const file = request.url.substring(1) || 'index.html'
-  if (!staticFilesBinnary[file]) {
+  const uri = request.url.substring(1) || 'index.html'
+  if (!staticFilesBinnary[uri]) {
+    if (router[uri]) {
+      const result = router[uri]()
+      response.writeHead(200)
+      return response.end(JSON.stringify(result))
+    }
     response.writeHead(404)
     return response.end()
   }
   response.writeHead(200)
-  response.end(staticFilesBinnary[file])
+  response.end(staticFilesBinnary[uri])
 }).listen(process.env.PORT, () => console.log(`listen http port ${process.env.PORT}`))
 
 const wss = new WebSocket.Server({
