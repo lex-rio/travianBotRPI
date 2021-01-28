@@ -30,10 +30,21 @@ progress {
 
 .general-sprite-img {
   display: inline-block;
-  float: left;
   background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/general.png);
   width: 16px;
   height: 16px
+}
+
+.unit_gold {
+  background-position: -288px -416px;
+}
+
+.unit_population {
+  background-position: -64px -416px;
+}
+
+.unit_silver {
+  background-position: -425px -320px;
 }
 
 .unit_wood {

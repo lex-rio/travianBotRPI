@@ -14,7 +14,6 @@ const app = {
       userContainer.setAttribute('id', `user-${user.userId}`)
       userContainer.innerHTML = `<div class="user-head">
           <span class="general-info"></span>
-          <b class="name"></b>
           <a href="#" onclick="app.updateUserForm(${user.userId})">🖉</a>
           <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})">✘</a>
         </div>
@@ -66,15 +65,15 @@ const app = {
     if (error) {
       return userBlock.getElementsByClassName('error')[0].innerHTML = error
     }
-    if (data.name) {
-      userBlock.getElementsByClassName('name')[0].innerHTML = `${data.name}(${data.kingdomTag}) ${tribes[data.tribeId]}`
-    }
     const villagesBlock = userBlock.getElementsByClassName('villages')[0]
     villagesBlock.innerHTML = data.villages.map(village => this.renderVillage(village)).join('')
     userBlock.appendChild(villagesBlock)
     
     const infoBlock = userBlock.getElementsByClassName('general-info')[0]
-    infoBlock.innerHTML = `villages: ${data.villages.length} gold: ${data.gold} silver: ${data.silver} population: ${data.population}`
+    infoBlock.innerHTML = `<b class="name">${data.name}(${data.kingdomTag}) ${tribes[data.tribeId]}</b> 
+      <i class="unit_gold general-sprite-img"></i> ${data.gold}
+      <i class="unit_silver general-sprite-img"></i> ${data.silver}
+      <i class="unit_population general-sprite-img"></i>: ${data.population}`
   },
 
   renderVillage (village) {
@@ -93,8 +92,8 @@ const app = {
   renderResourses (village, resourseId) {
     return `<div class="resourse">
               <div>
-                <i class="unit_${recourses[resourseId]} general-sprite-img"></i>
                 ${Math.floor(village.storage[resourseId])}/${village.storageCapacity[resourseId]}
+                <i class="unit_${recourses[resourseId]} general-sprite-img"></i>
               </div>
               <progress
                 value="${Math.floor(village.storage[resourseId])}" 

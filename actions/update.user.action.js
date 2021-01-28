@@ -6,6 +6,7 @@ class UpdateUserAction extends Action {
 
   constructor(data, callbacks) {
     super(data, callbacks)
+    this.period = data.period || 60
     this.villagesIds = []
     this.villagesBuildingQueue = {}
     this.actionName = 'updateUserData'

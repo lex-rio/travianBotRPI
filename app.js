@@ -10,6 +10,10 @@ class App {
     this.runningActions = []
     this.logger = logger
     this.transport = transport || {broadcast: _ => _}
+    this.callbacks = {
+      success: this.transport.broadcast,
+      error: this.logger.alert
+    }
     this.types = types
     this.initialData = {}
     this.db = db
@@ -37,14 +41,15 @@ class App {
   initActions(actions = []) {
     actions.map(actionData => {
       this.runningActions.push(
-        actionFactory(actionData, {
-          success: this.transport.broadcast,
-          error: this.logger.alert
-        })
+        actionFactory(actionData, this.callbacks)
       )
     })
   }
 
+  /**
+   * @todo: refactoring
+   * @param {UserData} data 
+   */
   async addUser(data) {
     const [user] = await add('users', [data])
     const actions = await add('actions', [
