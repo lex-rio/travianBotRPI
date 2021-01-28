@@ -11,7 +11,7 @@ body {
  
 }
 
-.users .user-head {
+#users .user-head {
   background-color: aquamarine;
 }
 
