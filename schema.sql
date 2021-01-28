@@ -2,7 +2,6 @@ create table users (
   userId    integer not null primary key,
   session   text    not null,
   chatId    text    not null,
-  userName  text,
   --
   unique(userId),
   unique(session)

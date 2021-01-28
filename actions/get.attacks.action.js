@@ -12,10 +12,6 @@ class GetAttacksAction extends Action {
     this.params = () => ({})
     this.getData = data => data.cache
   }
-
-  callback (data) {
-    super.callback(data)
-  }
 }
 
 module.exports = GetAttacksAction

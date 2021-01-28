@@ -11,10 +11,8 @@ class App {
     this.logger = logger
     this.transport = transport || {broadcast: _ => _}
     this.types = types
-    this.schemas = {}
     this.initialData = {}
     this.db = db
-    this.db.all(`PRAGMA table_info(users)`, [], (err, rows) => err ? this.logger.alert(err) : this.schemas.user = rows)
     this.db.all(
       `SELECT * from users 
       LEFT JOIN actions USING (userId)`,

@@ -2,7 +2,11 @@ body {
   font-size: 13px;
 }
 
-#users {
+progress {
+  width: 100px;
+}
+
+#users .villages>div{
   text-align: right;
 }
 
@@ -11,10 +15,50 @@ body {
  
 }
 
+.vill-name {
+  padding: 10px;
+}
+
 #users .user-head {
   background-color: aquamarine;
+  cursor: pointer;
 }
 
 .villages>div:nth-child(odd){
   background-color: aliceblue;
+}
+
+.general-sprite-img {
+  display: inline-block;
+  float: left;
+  background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/general.png);
+  width: 16px;
+  height: 16px
+}
+
+.unit_wood {
+  background-position: -409px -272px;
+}
+
+.unit_clay {
+  background-position: -32px -432px;
+}
+
+.unit_iron {
+  background-position: -176px -416px;
+}
+
+.unit_crop {
+  background-position: -441px -192px;
+}
+
+.troops-sprite-img {
+  display: inline-block;
+  background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/unit/small/unit/small.png);
+  width: 20px;
+  height: 20px;
+}
+
+.unitSmall.gaul.unitType4 {
+  background-position: -40px 0;
 }

@@ -17,17 +17,17 @@ const staticFilesBinnary = fs.readdirSync('./public')
 
 const server = http.createServer((request, response) => {
   const uri = request.url.substring(1) || 'index.html'
-  if (!staticFilesBinnary[uri]) {
-    if (router[uri]) {
-      const result = router[uri]()
-      response.writeHead(200)
-      return response.end(JSON.stringify(result))
-    }
-    response.writeHead(404)
-    return response.end()
+  if (staticFilesBinnary[uri]) {
+    response.writeHead(200)
+    return response.end(staticFilesBinnary[uri])
   }
-  response.writeHead(200)
-  response.end(staticFilesBinnary[uri])
+  if (router[uri]) {
+    const result = router[uri]()
+    response.writeHead(200)
+    return response.end(JSON.stringify(result))
+  }
+  response.writeHead(404)
+  return response.end()
 }).listen(process.env.PORT, () => console.log(`listen http port ${process.env.PORT}`))
 
 const wss = new WebSocket.Server({
@@ -52,7 +52,7 @@ const app = new App({
 })
 
 wss.on('connection', async ws => {
-  ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, schemas: app.schemas, types: app.types}}))
+  ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, types: app.types}}))
 
   app.runningActions.map(action => {
     ws.send(JSON.stringify({

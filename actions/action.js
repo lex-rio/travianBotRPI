@@ -37,6 +37,8 @@ class Action {
     clearInterval(this.intervalId)
   }
 
+  callback (response) {}
+
   async run () {
     let response
     try {
@@ -49,6 +51,7 @@ class Action {
       if (response.error) {
         throw new Error(response.error.message)
       }
+      this.callback(response)
       this.lastResponse = this.getData(response)
       this.updatedAt = +(new Date())
     } catch (e) {
