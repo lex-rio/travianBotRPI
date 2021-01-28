@@ -10,9 +10,11 @@ const app = {
       
       const userContainer = document.getElementById(`user-${user.userId}`) || document.createElement('div')
       userContainer.setAttribute('id', `user-${user.userId}`)
-      userContainer.innerHTML = `<b class="name">${user.userName}</b>
-        <a href="#" onclick="app.updateUserForm(${user.userId})">🖉</a>
-        <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})">✘</a>
+      userContainer.innerHTML = `<div class="user-head">
+          <b class="name">${user.userName}</b>
+          <a href="#" onclick="app.updateUserForm(${user.userId})">🖉</a>
+          <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})">✘</a>
+        </div>
         <div class="villages"></div>
         <div class="error"></div>`
       usersContainer.appendChild(userContainer)

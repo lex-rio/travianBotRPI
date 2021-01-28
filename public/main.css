@@ -11,6 +11,10 @@ body {
  
 }
 
+.users .user-head {
+  background-color: aquamarine;
+}
+
 .villages>div:nth-child(odd){
   background-color: aliceblue;
 }
