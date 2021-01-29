@@ -67,11 +67,11 @@ class App {
     return update('users', {userId: data.userId}, data)
   }
 
-  async updateHeroProduction ({userId, resourseId}) {
+  async updateHeroProduction ({userId, resourceId}) {
     const user = await getOne('users', {userId})
     if (!user)
       return
-    const action = new UpdateHeroProductionAction({...user, resourseId}, this.callbacks)
+    const action = new UpdateHeroProductionAction({...user, resourceId}, this.callbacks)
     action.run()
   }
 

@@ -1,6 +1,7 @@
 "use strict";
 const tribes = {1:'Рим',2:'Немец',3:'Галл'}
 const recourses = {1:'wood',2:'clay',3:'iron', 4:'crop'}
+const moveTypes = {3: 'attack', 4: 'reyd', 5: "support", 7: 'trade', 9: "support_back", 10: 'settle', 33: 'trade_back', 36: 'heal'}
 
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
@@ -80,47 +81,59 @@ const app = {
       heroBlock.innerHTML = `${this.renderHero(data.hero)}`
   },
 
-  sendUpdateHeroProduction (userId, resourseId) {
-    this.send( 'updateHeroProduction', {userId, resourseId} )
+  sendUpdateHeroProduction (userId, resourceId) {
+    this.send( 'updateHeroProduction', {userId, resourceId} )
   },
   
   updateHeroProduction (error, data) {
-    console.log(data)
+    // console.log(data)
   },
 
   renderHero (data) {
     console.log(data.resBonusType)
     return `Hero: (level: ${data.level} HP: ${Math.round(data.health)} +${data.resBonusPoints * 60 + 240} <select onchange="app.sendUpdateHeroProduction(${data.playerId}, this.value)">
-              ${Object.entries(recourses).map(([resourseId, resourse]) => `
-                <option ${data.resBonusType == resourseId ? 'selected' : ''} value="${resourseId}">${resourse}</option>
+              ${Object.entries(recourses).map(([resourceId, resource]) => `
+                <option ${data.resBonusType == resourceId ? 'selected' : ''} value="${resourceId}">${resource}</option>
               `)}
             </select>)`
   },
 
+  time(timestamp) {
+    return new Date(timestamp * 1000).toLocaleTimeString(undefined, { hour12: false })
+  },
+
   renderVillage (village) {
-    // console.log(village.buildingQueue)
+    const movements = village.troopsMoving.map(({data}) => `<div class="movement">
+      <i class="movement-icon movement-${moveTypes[data.movement.movementType]} ${data.movement.villageIdTarget === village.villageId ? 'incoming' : 'outgoing'}"></i> 
+      ${data.playerName}(${data.villageName}) 
+      ${+Object.values(data.movement.resources).join('') ? Object.values(data.movement.resources).join('|') : ''}
+      ${this.time(data.movement.timeFinish)}
+    </div>`)
+    console.log(village.troopsMoving)
     // const slot1 = village.buildingQueue.queues[1].pop() || {}
     // const slot2 = village.buildingQueue.queues[4].pop() || {}
     // ${slot1.buildingType}<br>
     // ${slot2.buildingType}<br>
     return `<div id="village-${village.villageId}">
-      <i class="unitSmall gaul unitType4 troops-sprite-img"></i>
-      <span class="vill-name">${village.name}(${village.population}) -</span>
-      ${Object.keys(village.storage).map(resourseId => this.renderResourses(village, resourseId)).join('')}
+      <div class="vill-name">${village.name}(${village.population})</div>
+      <span class="movements-block">${movements.join('')}</span>
+      <!--<i class="unitSmall gaul unitType4 troops-sprite-img"></i>-->
+      
+      <span class="resources-block">${Object.keys(village.storage).map(resourceId => this.renderResources(village, resourceId)).join('')}</span>
     </div>`
   },
 
-  renderResourses (village, resourseId) {
-    return `<div class="resourse">
+  renderResources (village, resourceId) {
+    return `<div class="resource">
               <div>
-                ${Math.floor(village.storage[resourseId])}/${village.storageCapacity[resourseId]}
-                <i class="unit_${recourses[resourseId]} general-sprite-img"></i>
+                ${Math.floor(village.storage[resourceId])}/${village.storageCapacity[resourceId]}
+                <i class="unit_${recourses[resourceId]} general-sprite-img"></i>
               </div>
               <progress
-                value="${Math.floor(village.storage[resourseId])}" 
-                max="${village.storageCapacity[resourseId]}"></progress>
+                value="${Math.floor(village.storage[resourceId])}" 
+                max="${village.storageCapacity[resourceId]}"></progress>
               <br>
-              +${village.production[resourseId]}
+              +${village.production[resourceId]}
             </div>`
   },
 

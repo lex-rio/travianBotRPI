@@ -6,22 +6,30 @@ progress {
   width: 100px;
 }
 
-#users .villages>div{
+#users .villages .resources-block{
   text-align: right;
+  float: right;
 }
 
-.resourse {
+.movements-block {
+  float: left;
+}
+
+.resource {
   display: inline-block;
- 
 }
 
 .vill-name {
-  padding: 10px;
+  text-align: center;
 }
 
 #users .user-head {
   background-color: aquamarine;
   cursor: pointer;
+}
+
+.villages>div {
+  display: flow-root;
 }
 
 .villages>div:nth-child(odd){
@@ -33,6 +41,45 @@ progress {
   background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/general.png);
   width: 16px;
   height: 16px
+}
+
+.movement-icon {
+  display: inline-block;
+  background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/movement.png);
+  width: 16px;
+  height: 16px
+}
+
+.incoming {
+  border-left: 6px solid #3da311;
+}
+
+.incoming.movement-attack, .incoming.movement-reyd {
+  border-left: 6px solid red;
+}
+
+.outgoing {
+  border-left: 6px solid #f90;
+}
+
+.movement-heal {
+  background-position: -98px -225px;
+}
+
+.movement-settle {
+  background-position: -34px -225px;
+}
+
+.movement-trade, .movement-trade_back {
+  background-position: -66px -225px;
+}
+
+.movement-attack, .movement-reyd {
+  background-position: -50px -225px;
+}
+
+.movement-support, .movement-support_back {
+  background-position: -284px -200px;
 }
 
 .action_edit {

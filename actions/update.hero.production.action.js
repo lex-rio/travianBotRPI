@@ -14,7 +14,7 @@ class UpdateHeroProductionAction extends Action {
       defBonusPoints: 0,
       fightStrengthPoints: 0,
       resBonusPoints: 0,
-      resBonusType: data.resourseId
+      resBonusType: data.resourceId
     })
     this.getData = data => data
   }
