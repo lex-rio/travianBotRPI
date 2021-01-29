@@ -25,6 +25,12 @@ class UpdateUserAction extends Action {
           userData.hero = data
         } else if (name.includes('Collection:Troops:moving')) {
           troopsMoving[name.split(':')[3]] = data.cache
+          data.cache.map(({data}) => {
+            if ([3,4].includes(+data.movement.movementType)) {
+              const time = new Date(data.movement.timeFinish * 1000).toLocaleTimeString(undefined, { hour12: false })
+              callbacks.error(`ATTACK to user ${actionData.userId} from ${data.playerName}(${data.villageName}) at ${time}`)
+            }
+          })
         } else if (name.includes('BuildingQueue:')) {
           villagesBuildingQueue[name.split(':')[1]] = data
         }
