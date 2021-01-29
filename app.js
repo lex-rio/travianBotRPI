@@ -1,7 +1,7 @@
 "use strict"
 
 const { add, remove, getOne, update } = require('./db')
-const { actionFactory, types } = require('./actions/factory')
+const { actionFactory, types, classes: { UpdateHeroProductionAction } } = require('./actions/factory')
 const { User } = require('./entities/user')
 
 class App {
@@ -65,6 +65,14 @@ class App {
     //   {userId: data.userId, period: 120, type: 8}
     // ])
     return update('users', {userId: data.userId}, data)
+  }
+
+  async updateHeroProduction ({userId, resourseId}) {
+    const user = await getOne('users', {userId})
+    if (!user)
+      return
+    const action = new UpdateHeroProductionAction({...user, resourseId}, this.callbacks)
+    action.run()
   }
 
   async deleteUser(cond) {

@@ -16,6 +16,7 @@ const app = {
           <span class="general-info"></span>
           <a href="#" onclick="app.updateUserForm(${user.userId})"><i class="action_edit general-sprite-img"></i></a>
           <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})"><i class="action_delete general-sprite-img"></i></a>
+          <span class="hero"></span>
         </div>
         <div class="villages"></div>
         <div class="error"></div>`
@@ -74,6 +75,26 @@ const app = {
       <i class="unit_gold general-sprite-img"></i> ${data.gold}
       <i class="unit_silver general-sprite-img"></i> ${data.silver}
       <i class="unit_population general-sprite-img"></i>: ${data.population}`
+    
+      const heroBlock = userBlock.getElementsByClassName('hero')[0]
+      heroBlock.innerHTML = `${this.renderHero(data.hero)}`
+  },
+
+  sendUpdateHeroProduction (userId, resourseId) {
+    this.send( 'updateHeroProduction', {userId, resourseId} )
+  },
+  
+  updateHeroProduction (error, data) {
+    console.log(data)
+  },
+
+  renderHero (data) {
+    console.log(data.resBonusType)
+    return `Hero: (level: ${data.level} resourse: <select onchange="app.sendUpdateHeroProduction(${data.playerId}, this.value)">
+              ${Object.entries(recourses).map(([resourseId, resourse]) => `
+                <option ${data.resBonusType == resourseId ? 'selected' : ''} value="${resourseId}">${resourse}</option>
+              `)}
+            </select>)`
   },
 
   renderVillage (village) {
@@ -111,7 +132,9 @@ app.ws.onmessage = ({data}) => {
   try {
     const {action, dataset, error} = JSON.parse(data)
     console.log(action)
-    app[action](error, dataset)
+    if (app[action]) {
+      app[action](error, dataset)
+    }
   } catch (e) {
     console.log(e.message)
   }

@@ -8,6 +8,7 @@ const SendAttackAction = require('./action')
 const SendSupportAction = require('./action')
 const AddToBuildQueAction = require('./action')
 const GetLastReportsAction = require('./get.last.reports.action')
+const UpdateHeroProductionAction = require('./update.hero.production.action')
 
 const types = {
   0: 'UpdateUserAction',
@@ -18,7 +19,8 @@ const types = {
   5: 'SendSupportAction',
   6: 'AddToBuildQueAction',
   7: 'GetMessagesAction',
-  8: 'GetLastReportsAction'
+  8: 'GetLastReportsAction',
+  9: 'UpdateHeroProductionAction'
 }
 const classes = {
   UpdateUserAction,
@@ -28,9 +30,10 @@ const classes = {
   SendAttackAction,
   SendSupportAction,
   AddToBuildQueAction,
-  GetLastReportsAction
+  GetLastReportsAction,
+  UpdateHeroProductionAction
 }
 
 const actionFactory = (actionData, callbacks) => new classes[types[actionData.type]](actionData, callbacks)
 
-module.exports = { actionFactory, types }
+module.exports = { actionFactory, types, classes }

@@ -2,6 +2,11 @@
 
 const Action = require('./action')
 
+const baseRequestNames = (userId) => [
+  `Player:${userId}`,
+  `Hero:${userId}`
+]
+
 class UpdateUserAction extends Action {
 
   constructor(data, callbacks) {
@@ -13,7 +18,7 @@ class UpdateUserAction extends Action {
     this.controller = 'cache'
     this.action = 'get'
     this.params = userId => ({names: [
-      `Player:${userId}`,
+      ...baseRequestNames(userId),
       ...this.villagesIds.map(id => `BuildingQueue:${id}`)
     ]})
     this.getData = data => {
@@ -21,17 +26,19 @@ class UpdateUserAction extends Action {
       for (const i in userData.villages) {
         userData.villages[i].buildingQueue = this.villagesBuildingQueue[userData.villages[i].villageId]
       }
+      userData.hero = data.cache[1].data
       return userData
     }
   }
 
   callback (response) {
     this.villagesIds = response.cache[0].data.villages.map(({villageId}) => villageId)
+    const baseRequestNamesLength = baseRequestNames().length
 
-    if (response.cache.length < 2)
+    if (response.cache.length == baseRequestNamesLength)
       return
 
-    for (const {data} of response.cache.slice(1)) {
+    for (const {data} of response.cache.slice(baseRequestNamesLength)) {
       this.villagesBuildingQueue[data.villageId] = data
     }
   }
