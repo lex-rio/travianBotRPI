@@ -18,13 +18,12 @@ class App {
     this.initialData = {}
     this.db = db
     this.db.all(
-      `SELECT * from users 
-      LEFT JOIN actions USING (userId)`,
+      `SELECT * from users LEFT JOIN actions USING (userId)`,
       [],
       (err, rows) => {
         if (err) return this.logger.alert(err)
         const users = rows.reduce((acc, action) => {
-          const index = acc.findIndex(u => u.userId === action.userId)
+          const index = acc.findIndex(({userId}) => userId === action.userId)
           const user = index !== -1 ? acc[index] : new User(action)
           user.actions.push(action)
           if (index === -1) {

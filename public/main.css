@@ -35,6 +35,16 @@ progress {
   height: 16px
 }
 
+.action_edit {
+  background-position: -425px -160px;
+}
+
+.action_delete {
+  background-position: -457px -194px;
+  width: 11px;
+  height: 11px
+}
+
 .unit_gold {
   background-position: -288px -416px;
 }

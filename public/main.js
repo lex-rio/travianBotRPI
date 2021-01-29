@@ -14,8 +14,8 @@ const app = {
       userContainer.setAttribute('id', `user-${user.userId}`)
       userContainer.innerHTML = `<div class="user-head">
           <span class="general-info"></span>
-          <a href="#" onclick="app.updateUserForm(${user.userId})">🖉</a>
-          <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})">✘</a>
+          <a href="#" onclick="app.updateUserForm(${user.userId})"><i class="action_edit general-sprite-img"></i></a>
+          <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})"><i class="action_delete general-sprite-img"></i></a>
         </div>
         <div class="villages"></div>
         <div class="error"></div>`
