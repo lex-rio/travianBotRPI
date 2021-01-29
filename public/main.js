@@ -90,7 +90,7 @@ const app = {
 
   renderHero (data) {
     console.log(data.resBonusType)
-    return `Hero: (level: ${data.level} resourse: <select onchange="app.sendUpdateHeroProduction(${data.playerId}, this.value)">
+    return `Hero: (level: ${data.level} HP: ${Math.round(data.health)} +${data.resBonusPoints * 60 + 240} <select onchange="app.sendUpdateHeroProduction(${data.playerId}, this.value)">
               ${Object.entries(recourses).map(([resourseId, resourse]) => `
                 <option ${data.resBonusType == resourseId ? 'selected' : ''} value="${resourseId}">${resourse}</option>
               `)}

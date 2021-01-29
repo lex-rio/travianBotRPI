@@ -15,7 +15,7 @@
   <form>
     <label>userId<input type="text" name="userId" placeholder="userId"></label>
     <label>session<input type="text" name="session" placeholder="session"></label>
-    <input type="button" value="add" onclick="app.send('addUser', Object.fromEntries(new FormData(this.closest(\'form\'))))">
+    <input type="button" value="add" onclick="app.send('addUser', Object.fromEntries(new FormData(this.closest('form'))))">
   <form>
 </div>
 <script src="/main.js"></script>
