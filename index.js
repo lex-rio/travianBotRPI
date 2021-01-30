@@ -54,13 +54,13 @@ const app = new App({
 wss.on('connection', async ws => {
   ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, types: app.types}}))
 
-  app.runningActions.map(action => {
+  app.initialData.users.map(({actions}) => actions.map((action) => {
     ws.send(JSON.stringify({
       action: action.actionName,
       dataset: {...action.lastResponse, userId: action.userId, updatedAt: action.updatedAt},
       error: action.lastError
     }))
-  })
+  }))
 
   ws.on('message', message => {
     const {action, data} = JSON.parse(message)

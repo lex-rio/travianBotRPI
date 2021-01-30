@@ -5,39 +5,42 @@ const fetch = require('../fetch')
 
 class Action {
 
-  constructor({session, userId, period, time, priority}, {success, error}) {
-    this.updatedAt = 0 
-    this.lastResponse = {}
-    this.userId = userId
-    this.session = session
-    this.time = time
-    this.priority = priority
-    this.period = period
-    this.success = success
-    this.error = error
-
+  constructor(data, {success, error}) {
     this.actionName = ''
     this.controller = ''
     this.action = ''
-    this.params = userId => ({names: [`Player:${userId}`]})
-    this.getData = data => data
+    this.actionId = data.actionId
+    this.updatedAt = 0 
+    this.timeLeft = 0
+    this.lastResponse = {}
+    this.userId = data.userId
+    this.session = data.session
+    this.time = data.time
+    this.priority = data.priority
+    this.period = data.period
+    this.success = success
+    this.errorCallback = error
 
     this.init()
   }
 
-  init () {
-    if (this.period) {
-      stack.push(this)
-      this.intervalId = setInterval(() => stack.push(this), this.period * 1000)
-    }
+  init () {    
+    stack.set(this.actionId, this)
   }
 
   stop () {
-    console.log(`action for user ${this.userId} was stopped`)
-    clearInterval(this.intervalId)
+    if (stack.has(this.actionId)) {
+      stack.delete(this.actionId)
+    }
   }
 
-  callback (response) {}
+  params(userId) {
+    return {names: [`Player:${userId}`]}
+  }
+
+  getData(data) {
+    return data
+  }
 
   async run () {
     let response
@@ -51,12 +54,11 @@ class Action {
       if (response.error) {
         throw new Error(response.error.message)
       }
-      this.callback(response)
       this.lastResponse = this.getData(response)
       this.updatedAt = +(new Date())
     } catch (e) {
       this.lastError = e.message
-      this.error({error: e, response, userId: this.userId})
+      this.errorCallback({error: e, response, userId: this.userId})
     }
     this.success(this)
   }

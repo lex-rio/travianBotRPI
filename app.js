@@ -7,7 +7,6 @@ const { User } = require('./entities/user')
 class App {
 
   constructor ({transport, logger, db}) {
-    this.runningActions = []
     this.logger = logger
     this.transport = transport || {broadcast: _ => _}
     this.callbacks = {
@@ -17,32 +16,26 @@ class App {
     this.types = types
     this.initialData = {}
     this.db = db
+    this.init()
+  }
+
+  init() {
     this.db.all(
-      `SELECT * from users LEFT JOIN actions USING (userId)`,
-      [],
+      `SELECT * from users LEFT JOIN actions USING (userId)`, [],
       (err, rows) => {
         if (err) return this.logger.alert(err)
         const users = rows.reduce((acc, action) => {
           const index = acc.findIndex(({userId}) => userId === action.userId)
           const user = index !== -1 ? acc[index] : new User(action)
-          user.actions.push(action)
+          user.actions.push(actionFactory(action, this.callbacks))
           if (index === -1) {
             acc.push(user)
           }
           return acc
         }, [])
         this.initialData.users = users
-        this.initActions(rows)
       }
     )
-  }
-
-  initActions(actions = []) {
-    actions.map(actionData => {
-      this.runningActions.push(
-        actionFactory(actionData, this.callbacks)
-      )
-    })
   }
 
   /**
@@ -55,8 +48,9 @@ class App {
       {userId: user.userId, period: 60},
       {userId: user.userId, period: 120, type: 1}
     ])
+    user.actions = actions.map(action => actionFactory({...action, ...user}, this.callbacks))
     this.initialData.users.push(user)
-    this.initActions(actions.map(action => ({...action, ...user})))
+    
     return user
   }
 
@@ -71,8 +65,7 @@ class App {
     const user = await getOne('users', {userId})
     if (!user)
       return
-    const action = new UpdateHeroProductionAction({...user, resourceId}, this.callbacks)
-    action.run()
+    new UpdateHeroProductionAction({...user, resourceId}, this.callbacks)
   }
 
   async deleteUser(cond) {

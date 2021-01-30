@@ -1,7 +1,7 @@
 "use strict";
 const tribes = {1:'Рим',2:'Немец',3:'Галл'}
 const recourses = {1:'wood',2:'clay',3:'iron', 4:'crop'}
-const moveTypes = {3: 'attack', 4: 'reyd', 5: "support", 7: 'trade', 9: "support_back", 10: 'settle', 33: 'trade_back', 36: 'heal'}
+const moveTypes = {3: 'attack', 4: 'reyd', 5: "support", 7: 'trade', 9: "support_back", 10: 'settle', 20: 'adventure', 33: 'trade_back', 36: 'heal'}
 
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
@@ -14,9 +14,9 @@ const app = {
       const userContainer = document.getElementById(`user-${user.userId}`) || document.createElement('div')
       userContainer.setAttribute('id', `user-${user.userId}`)
       userContainer.innerHTML = `<div class="user-head">
-          <span class="general-info"></span>
           <a href="#" onclick="app.updateUserForm(${user.userId})"><i class="action_edit general-sprite-img"></i></a>
           <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})"><i class="action_delete general-sprite-img"></i></a>
+          <span class="general-info"></span>
           <span class="hero"></span>
         </div>
         <div class="villages"></div>
