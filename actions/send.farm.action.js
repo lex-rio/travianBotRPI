@@ -6,7 +6,7 @@ class SendFarmAction extends Action {
 
   constructor(data, callbacks) {
     super(data, callbacks)
-    this.period = actionData.period || 300
+    this.period = data.period || 300
     this.actionName = 'startFarmListRaid'
     this.controller = 'troops'
     this.action = 'startFarmListRaid'
