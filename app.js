@@ -54,11 +54,11 @@ class App {
   async addUser(data) {
     const [user] = await add('users', [data])
     const actions = await add('actions', [
-      { userId: user.userId, period: 60 },
-      { userId: user.userId, period: 120, type: 1 }
+      { userId: user.userId },
+      { userId: user.userId, type: 1 }
     ])
     user.actions = actions.map(action => actionFactory({ ...action, ...user }, this.callbacks))
-    this.initialData.users.push(user)
+    this.initialData.users.set(user.userId, user)
 
     return user
   }
@@ -81,6 +81,7 @@ class App {
     if (!cond) return
     const user = this.initialData.users.get(cond.userId)
     user.actions.map(action => action.stop())
+    this.initialData.users.delete(cond.userId)
     await Promise.all([
       remove('users', cond),
       remove('villages', cond),

@@ -16,6 +16,12 @@ const moveTypes = {
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
 const timers = new Map()
+const createTimer = ({ actionId, timeLeft }) => {
+  const timerBlock = document.createElement('span')
+  timers.set(actionId, { timerBlock, value: timeLeft })
+  return timerBlock
+}
+
 const app = {
 
   users: new Proxy({}, {
@@ -24,11 +30,6 @@ const app = {
 
       const userContainer = document.getElementById(`user-${user.userId}`) || document.createElement('div')
       userContainer.setAttribute('id', `user-${user.userId}`)
-      const timersBlocks = user.actions.map(({ actionId, timeLeft }) => {
-        const timerBlock = document.createElement('span')
-        timers.set(actionId, { timerBlock, value: timeLeft })
-        return timerBlock
-      })
       userContainer.innerHTML = `<div class="user-head">
           <a href="#" onclick="app.updateUserForm(${user.userId})"><i class="action_edit general-sprite-img"></i></a>
           <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})"><i class="action_delete general-sprite-img"></i></a>
@@ -39,7 +40,7 @@ const app = {
         <div class="villages"></div>
         <div class="error"></div>`
       usersContainer.appendChild(userContainer)
-      userContainer.getElementsByClassName('timers')[0].append(...timersBlocks)
+      userContainer.getElementsByClassName('timers')[0].append(...user.actions.map(createTimer))
       return true
     },
     deleteProperty: (target, prop) => {
@@ -171,7 +172,7 @@ app.ws.onmessage = ({ data }) => {
   const parsed = JSON.parse(data)
   if (app[parsed.actionName]) {
     if (parsed.actionId) {
-      const timer = timers.get(parsed.actionId)
+      const timer = timers.get(parsed.actionId) || createTimer(parsed)
       timer.value = parsed.timeLeft
     }
     app[parsed.actionName](parsed)

@@ -59,7 +59,7 @@ wss.on('connection', async ws => {
     app[action](data)
       .then(dataset => wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ action, dataset }))
+          client.send(JSON.stringify({ actionName: action, ...dataset }))
         }
       }))
       .catch(console.error)
