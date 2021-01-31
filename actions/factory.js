@@ -2,7 +2,7 @@
 
 const UpdateUserAction = require('./update.user.action')
 const GetAttacksAction = require('./get.attacks.action')
-const SendFamrAction = require('./action')
+const SendFamrAction = require('./send.farm.action')
 const SendMerchantsAction = require('./action')
 const SendAttackAction = require('./action')
 const SendSupportAction = require('./action')
