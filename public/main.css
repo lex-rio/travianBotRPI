@@ -36,6 +36,10 @@ progress {
   background-color: #f90;
 }
 
+.timer-startFarmListRaid {
+  background-color: rgb(255, 8, 0);
+}
+
 .villages>div {
   display: flow-root;
 }

@@ -65,7 +65,7 @@ class App {
 
   updateUser(data) {
     // add('actions', [
-    //   {userId: data.userId, period: 120, type: 8}
+    //   {userId: data.userId, type: 8}
     // ])
     return update('users', { userId: data.userId }, data)
   }
