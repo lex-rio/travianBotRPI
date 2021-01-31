@@ -5,7 +5,7 @@ const fs = require('fs')
 const WebSocket = require('ws')
 const App = require('./app')
 const telegram = require('./telegram')
-const {db} = require('./db')
+const { db } = require('./db')
 const { router } = require('./api')
 
 // serve static
@@ -38,39 +38,28 @@ const wss = new WebSocket.Server({
 
 const app = new App({
   transport: {
-    broadcast: action =>
-      wss.clients.forEach(client => {
-        client.send(JSON.stringify({
-          action: action.actionName,
-          dataset: {...action.lastResponse, userId: action.userId, updatedAt: action.updatedAt},
-          error: action.lastError
-        }))
-      })
+    broadcast: action => wss.clients.forEach(client => client.send(JSON.stringify(action)))
   },
   logger: telegram,
   db
 })
 
 wss.on('connection', async ws => {
-  ws.send(JSON.stringify({action: 'init', dataset: {initialData: app.initialData, types: app.types}}))
 
-  app.initialData.users.map(({actions}) => actions.map((action) => {
-    ws.send(JSON.stringify({
-      action: action.actionName,
-      dataset: {...action.lastResponse, userId: action.userId, updatedAt: action.updatedAt},
-      error: action.lastError
-    }))
-  }))
+  ws.send(JSON.stringify({ actionName: 'init', ...app.getInitialData() }))
+  app.initialData.users
+    .forEach(user => user.actions
+      .forEach(action => ws.send(JSON.stringify(action))))
 
   ws.on('message', message => {
-    const {action, data} = JSON.parse(message)
+    const { action, data } = JSON.parse(message)
     if (typeof app[action] !== 'function') {
       return ws.send((`invalid request ${action}`))
     }
     app[action](data)
       .then(dataset => wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({action, dataset}))
+          client.send(JSON.stringify({ action, dataset }))
         }
       }))
       .catch(console.error)

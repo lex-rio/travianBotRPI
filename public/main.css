@@ -28,6 +28,10 @@ progress {
   cursor: pointer;
 }
 
+#users .user-head .timers{
+  margin-left: 10px;
+}
+
 .villages>div {
   display: flow-root;
 }

@@ -15,6 +15,7 @@ const moveTypes = {
 
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
+const timers = new Map()
 const app = {
 
   users: new Proxy({}, {
@@ -23,16 +24,22 @@ const app = {
 
       const userContainer = document.getElementById(`user-${user.userId}`) || document.createElement('div')
       userContainer.setAttribute('id', `user-${user.userId}`)
+      const timersBlocks = user.actions.map(({ actionId, timeLeft }) => {
+        const timerBlock = document.createElement('span')
+        timers.set(actionId, { timerBlock, value: timeLeft })
+        return timerBlock
+      })
       userContainer.innerHTML = `<div class="user-head">
           <a href="#" onclick="app.updateUserForm(${user.userId})"><i class="action_edit general-sprite-img"></i></a>
           <a href="#" onclick="app.send('deleteUser', {userId: ${user.userId}})"><i class="action_delete general-sprite-img"></i></a>
           <span class="general-info"></span>
           <span class="hero"></span>
-          <span class="actions"></span>
+          <span class="timers"></span>
         </div>
         <div class="villages"></div>
         <div class="error"></div>`
       usersContainer.appendChild(userContainer)
+      userContainer.getElementsByClassName('timers')[0].append(...timersBlocks)
       return true
     },
     deleteProperty: (target, prop) => {
@@ -47,14 +54,12 @@ const app = {
 
   send(action, data) { this.ws.send(JSON.stringify({ action, data })) },
 
-  init(error, { initialData, types }) {
-    // console.log(types)
-    initialData.users.map(user => {
-      this.users[user.userId] = user
-      const userBlock = document.getElementById(`user-${user.userId}`)
-      const actionsBlock = userBlock.getElementsByClassName('actions')[0]
-      actionsBlock.innerHTML = this.renderTimers(user.actions)
-    })
+  /** @callback */
+  init({ initialData: { users } }) {
+    users.map(user => this.users[user.userId] = user)
+    setInterval(() => timers
+      .forEach(timer => timer.timerBlock.innerHTML = timer.value--)
+      , 1000)
   },
 
   updateUserForm(userId) {
@@ -66,46 +71,47 @@ const app = {
       this.send('updateUser', Object.fromEntries(new FormData(e.target.closest('form'))))
   },
 
-  deleteUser(error, { userId }) {
+  /** @callback */
+  deleteUser({ userId }) {
     delete this.users[userId]
   },
 
-  updateUser(error, data) {
+  /** @callback */
+  updateUser(data) {
     this.users[data.userId] = data
   },
 
-  addUser(error, data) {
+  /** @callback */
+  addUser(data) {
     this.users[data.userId] = data
   },
 
-  updateUserData(error, user) {
-    const userBlock = document.getElementById(`user-${user.userId}`)
-    if (error) {
+  /** @callback */
+  updateUserData(action) {
+    const userBlock = document.getElementById(`user-${action.userId}`)
+    if (action.error) {
       return userBlock.getElementsByClassName('error')[0].innerHTML = error
     }
     const villagesBlock = userBlock.getElementsByClassName('villages')[0]
-    villagesBlock.innerHTML = user.villages.map(village => this.renderVillage(village)).join('')
+    villagesBlock.innerHTML = action.lastResponse.villages.map(village => this.renderVillage(village)).join('')
     userBlock.appendChild(villagesBlock)
 
     const infoBlock = userBlock.getElementsByClassName('general-info')[0]
-    infoBlock.innerHTML = `<b class="name">${user.name}(${user.kingdomTag}) ${tribes[user.tribeId]}</b> 
-      <i class="unit_gold general-sprite-img"></i> ${user.gold}
-      <i class="unit_silver general-sprite-img"></i> ${user.silver}
-      <i class="unit_population general-sprite-img"></i>: ${user.population}`
+    infoBlock.innerHTML = `<b class="name">${action.lastResponse.name}(${action.lastResponse.kingdomTag}) ${tribes[action.lastResponse.tribeId]}</b> 
+      <i class="unit_gold general-sprite-img"></i> ${action.lastResponse.gold}
+      <i class="unit_silver general-sprite-img"></i> ${action.lastResponse.silver}
+      <i class="unit_population general-sprite-img"></i>: ${action.lastResponse.population}`
 
     const heroBlock = userBlock.getElementsByClassName('hero')[0]
-    heroBlock.innerHTML = `${this.renderHero(user.hero)}`
-  },
-
-  renderTimers(actions) {
-    return actions.map(action => action.timeLeft).join(';')
+    heroBlock.innerHTML = `${this.renderHero(action.lastResponse.hero)}`
   },
 
   sendUpdateHeroProduction(userId, resourceId) {
     this.send('updateHeroProduction', { userId, resourceId })
   },
 
-  updateHeroProduction(error, data) {
+  /** @callback */
+  updateHeroProduction(data) {
     // console.log(data)
   },
 
@@ -162,14 +168,12 @@ const app = {
   }
 }
 app.ws.onmessage = ({ data }) => {
-  try {
-    const { action, dataset, error } = JSON.parse(data)
-    console.log(action)
-    if (app[action]) {
-      app[action](error, dataset)
+  const parsed = JSON.parse(data)
+  if (app[parsed.actionName]) {
+    if (parsed.actionId) {
+      const timer = timers.get(parsed.actionId)
+      timer.value = parsed.timeLeft
     }
-  } catch (e) {
-    console.log(e.message)
+    app[parsed.actionName](parsed)
   }
-
 }

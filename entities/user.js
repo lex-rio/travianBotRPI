@@ -3,4 +3,5 @@ module.exports = {User: function(data) {
   this.session = data.session
   this.chatId = data.chatId
   this.actions = []
+  this.villages = []
 }}

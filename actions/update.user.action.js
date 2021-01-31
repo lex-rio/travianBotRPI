@@ -14,7 +14,7 @@ class UpdateUserAction extends Action {
     this.action = 'getAll'
   }
 
-  params(userId) {
+  params() {
     return {deviceDimension: "1920:1080"}
   }
 

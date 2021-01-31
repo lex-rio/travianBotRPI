@@ -6,15 +6,17 @@ const { User } = require('./entities/user')
 
 class App {
 
-  constructor ({transport, logger, db}) {
+  constructor({ transport, logger, db }) {
     this.logger = logger
-    this.transport = transport || {broadcast: _ => _}
+    this.transport = transport || { broadcast: _ => _ }
     this.callbacks = {
       success: this.transport.broadcast,
       error: this.logger.alert
     }
     this.types = types
-    this.initialData = {}
+    this.initialData = {
+      users: new Map()
+    }
     this.db = db
     this.init()
   }
@@ -24,18 +26,25 @@ class App {
       `SELECT * from users LEFT JOIN actions USING (userId)`, [],
       (err, rows) => {
         if (err) return this.logger.alert(err)
-        const users = rows.reduce((acc, action) => {
-          const index = acc.findIndex(({userId}) => userId === action.userId)
-          const user = index !== -1 ? acc[index] : new User(action)
-          user.actions.push(actionFactory(action, this.callbacks))
-          if (index === -1) {
-            acc.push(user)
+        rows.forEach(action => {
+          let user = this.initialData.users.get(action.userId)
+          if (!user) {
+            user = new User(action)
+            this.initialData.users.set(action.userId, user)
           }
-          return acc
-        }, [])
-        this.initialData.users = users
+          user.actions.push(actionFactory(action, this.callbacks))
+        })
       }
     )
+  }
+
+  getInitialData() {
+    return {
+      initialData: {
+        users: [...this.initialData.users.values()]
+      },
+      types: this.types
+    }
   }
 
   /**
@@ -45,38 +54,33 @@ class App {
   async addUser(data) {
     const [user] = await add('users', [data])
     const actions = await add('actions', [
-      {userId: user.userId, period: 60},
-      {userId: user.userId, period: 120, type: 1}
+      { userId: user.userId, period: 60 },
+      { userId: user.userId, period: 120, type: 1 }
     ])
-    user.actions = actions.map(action => actionFactory({...action, ...user}, this.callbacks))
+    user.actions = actions.map(action => actionFactory({ ...action, ...user }, this.callbacks))
     this.initialData.users.push(user)
-    
+
     return user
   }
 
-  updateUser (data) {
+  updateUser(data) {
     // add('actions', [
     //   {userId: data.userId, period: 120, type: 8}
     // ])
-    return update('users', {userId: data.userId}, data)
+    return update('users', { userId: data.userId }, data)
   }
 
-  async updateHeroProduction ({userId, resourceId}) {
-    const user = await getOne('users', {userId})
+  async updateHeroProduction({ userId, resourceId }) {
+    const user = await getOne('users', { userId })
     if (!user)
       return
-    new UpdateHeroProductionAction({...user, resourceId}, this.callbacks)
+    new UpdateHeroProductionAction({ ...user, resourceId }, this.callbacks)
   }
 
   async deleteUser(cond) {
     if (!cond) return
-    this.initialData.users = this.initialData.users.filter(({userId}) => userId !== cond.userId)
-    this.runningActions = this.runningActions.filter(action => {
-      if (action.userId === cond.userId) {
-        action.stop()
-      }
-      return action.userId !== cond.userId
-    })
+    const user = this.initialData.users.get(cond.userId)
+    user.actions.map(action => action.stop())
     await Promise.all([
       remove('users', cond),
       remove('villages', cond),
@@ -86,8 +90,8 @@ class App {
   }
 
   async addAction(data) {
-    const {id} = await addRowsToTable('actions', [data])
-    this.initActions([{...(await getOne('actions', {actionId: id}))}])
+    const { id } = await addRowsToTable('actions', [data])
+    this.initActions([{ ...(await getOne('actions', { actionId: id })) }])
     return id
   }
 }

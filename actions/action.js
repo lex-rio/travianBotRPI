@@ -44,6 +44,7 @@ class Action {
 
   async run () {
     let response
+    this.lastError = ''
     try {
       response = await fetch(`/api/?c=${this.controller}&a=${this.action}&t${+(new Date())}`, {
         controller: this.controller,
