@@ -27,16 +27,7 @@ class UpdateUserAction extends Action {
         userData.hero = data
       } else if (name.includes('Collection:Troops:moving')) {
         troopsMoving[name.split(':')[3]] = data.cache
-        data.cache.map(({data}) => {
-          try {
-            if (attackMovementTypes.includes(+data.movement.movementType) && data.movement.villageIdTarget == name.split(':')[3]) {
-              const time = new Date(data.movement.timeFinish * 1000).toLocaleTimeString(undefined, { hour12: false })
-              this.errorCallback(`ATTACK to user ${this.userId} from ${data.playerName}(${data.villageName}) at ${time}`)
-            }
-          } catch (e) {
-            this.errorCallback(e.message)
-          }
-        })
+        data.cache.map(({data}) => this.notifyAttack(data, name.split(':')[3]))
       } else if (name.includes('BuildingQueue:')) {
         villagesBuildingQueue[name.split(':')[1]] = data
       }
@@ -47,6 +38,23 @@ class UpdateUserAction extends Action {
     }
     
     return userData
+  }
+
+  notifyAttack(data, villageId) {
+    try {
+      if (
+        data.movement &&
+        attackMovementTypes.includes(+data.movement.movementType) &&
+        data.movement.villageIdTarget == villageId &&
+        !Object.values(data.units).some(unit => unit > -1)
+      ) {
+        console.log(Object.values(data.units).some(unit => unit > -1))
+        const time = new Date(data.movement.timeFinish * 1000).toLocaleTimeString(undefined, { hour12: false })
+        this.errorCallback(`ATTACK to user ${this.userId} from ${data.playerName}(${data.villageName}) at ${time}`)
+      }
+    } catch (e) {
+      this.errorCallback(e.message)
+    }
   }
 }
 

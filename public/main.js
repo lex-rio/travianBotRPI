@@ -1,5 +1,5 @@
 "use strict";
-const tribes = { 1: 'Рим', 2: 'Немец', 3: 'Галл' }
+const tribes = { 1: 'roman', 2: 'herm', 3: 'gaul' }
 const recourses = { 1: 'wood', 2: 'clay', 3: 'iron', 4: 'crop' }
 const moveTypes = {
   3: 'attack',
@@ -10,7 +10,8 @@ const moveTypes = {
   10: 'settle',
   20: 'adventure',
   33: 'trade_back',
-  36: 'heal'
+  36: 'heal',
+  50: 'trade'
 }
 
 const usersContainer = document.getElementById('users')
@@ -138,13 +139,7 @@ const app = {
   },
 
   renderVillage(village) {
-    const movements = village.troopsMoving.map(({ data }) => `<div class="movement">
-      <i class="movement-icon movement-${moveTypes[data.movement.movementType]} ${data.movement.villageIdTarget === village.villageId ? 'incoming' : 'outgoing'}"></i> 
-      ${data.playerName}(${data.villageName}) 
-      ${+Object.values(data.movement.resources).join('') ? Object.values(data.movement.resources).join('|') : ''}
-      ${this.time(data.movement.timeFinish)}
-    </div>`)
-    console.log(village.troopsMoving)
+    const movements = village.troopsMoving.map(movement => this.renderMovement(movement, village.villageId))
     // const slot1 = village.buildingQueue.queues[1].pop() || {}
     // const slot2 = village.buildingQueue.queues[4].pop() || {}
     // ${slot1.buildingType}<br>
@@ -152,9 +147,25 @@ const app = {
     return `<div id="village-${village.villageId}">
       <div class="vill-name">${village.name}(${village.population})</div>
       <span class="movements-block">${movements.join('')}</span>
-      <!--<i class="unitSmall gaul unitType4 troops-sprite-img"></i>-->
-      
       <span class="resources-block">${Object.keys(village.storage).map(resourceId => this.renderResources(village, resourceId)).join('')}</span>
+    </div>`
+  },
+
+  renderMovement({ data }, villageId) {
+    const visible = Object.values(data.units).some(unit => unit > -1)
+    const units = visible
+      ? Object.entries(data.units)
+        .filter(([unitId, canSee]) => canSee !== 0)
+        .map(([unitId, canSee]) => `${canSee > 0 ? canSee : '?'}
+          <i title="${tribes[data.tribeId] + unitId}" class="unit ${tribes[data.tribeId]} unitType${unitId}"></i>`)
+      : ''
+
+    return `<div class="movement">
+      <i class="movement-icon movement-${moveTypes[data.movement.movementType]} ${data.movement.villageIdTarget === villageId ? 'incoming' : 'outgoing'}"></i> 
+      ${units}
+      ${data.playerName}(${data.villageName}) 
+      ${+Object.values(data.movement.resources).join('') ? Object.values(data.movement.resources).join('|') : ''}
+      ${this.time(data.movement.timeFinish)}
     </div>`
   },
 
