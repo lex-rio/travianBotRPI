@@ -61,6 +61,11 @@ class Action {
       this.lastError = e.message
       this.errorCallback({error: e, response, userId: this.userId})
     }
+    if (this.period) {
+      this.timeLeft = this.period
+    } else {
+      stack.delete(this.actionId)
+    }
     this.success(this)
   }
 }

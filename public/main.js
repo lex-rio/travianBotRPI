@@ -16,8 +16,16 @@ const moveTypes = {
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
 const timers = new Map()
-const createTimer = ({ actionId, timeLeft }) => {
+const createTimer = ({ actionId, timeLeft, actionName, userId }) => {
   const timerBlock = document.createElement('span')
+  timerBlock.className = `timer-${actionName}`
+  timerBlock.title = actionName
+  timerBlock.setAttribute('data-action_id', actionId)
+  timerBlock.setAttribute('data-user_id', userId)
+  timerBlock.onclick = (e) => app.send('triggerAction', {
+    actionId: e.target.getAttribute('data-action_id'),
+    userId: e.target.getAttribute('data-user_id'),
+  })
   timers.set(actionId, { timerBlock, value: timeLeft })
   return timerBlock
 }

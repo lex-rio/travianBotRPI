@@ -77,6 +77,15 @@ class App {
     new UpdateHeroProductionAction({ ...user, resourceId }, this.callbacks)
   }
 
+  async triggerAction({ actionId, userId }) {
+    const user = this.initialData.users.get(+userId)
+    if (!user) return
+    const action = user.actions.find(action => action.actionId == actionId)
+    if (action) {
+      action.run()
+    }
+  }
+
   async deleteUser(cond) {
     if (!cond) return
     const user = this.initialData.users.get(cond.userId)
