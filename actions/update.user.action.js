@@ -6,13 +6,13 @@ const attackMovementTypes = [3, 4]
 
 const notified = []
 
-const notifyAttack = (data, userId, notifyCallback = () => { }) => {
+const notifyAttack = (data, villageId, userId, notifyCallback = () => { }) => {
   try {
     if (
       data.movement &&
-      notified.includes(data.troopId) &&
+      !notified.includes(data.troopId) &&
       attackMovementTypes.includes(+data.movement.movementType) &&
-      data.movement.villageIdTarget == data.villageId &&
+      data.movement.villageIdTarget == villageId &&
       !Object.values(data.units).some(unit => unit > -1)
     ) {
       const time = new Date(data.movement.timeFinish * 1000).toLocaleTimeString(undefined, { hour12: false })
@@ -47,7 +47,7 @@ class UpdateUserAction extends Action {
         userData.hero = data
       } else if (name.includes('Collection:Troops:moving')) {
         troopsMoving[name.split(':')[3]] = data.cache
-        data.cache.map(({ data }) => notifyAttack(data, this.userId, this.errorCallback))
+        data.cache.map(({ data }) => notifyAttack(data, name.split(':')[3], this.userId, this.errorCallback))
       } else if (name.includes('BuildingQueue:')) {
         villagesBuildingQueue[name.split(':')[1]] = data
       }
