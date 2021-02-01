@@ -151,10 +151,78 @@ progress {
   background-position: -100px -20px;
 }
 
+.gaul.unitType2 {
+  background-position: 0 -20px;
+}
+
+.gaul.unitType3 {
+  background-position: -20 -20px;
+}
+
 .gaul.unitType4 {
   background-position: -40px 0;
 }
 
+.gaul.unitType5 {
+  background-position: -40px -20px;
+}
+
+.gaul.unitType6 {
+  background-position: 0 -40px;
+}
+
+.gaul.unitType7 {
+  background-position: -20px -40px;
+}
+
+.gaul.unitType8 {
+  background-position: -40px -40px;
+}
+
+.gaul.unitType9 {
+  background-position: -60px 0;
+}
+
+.gaul.unitType10 {
+  background-position: -20px 0;
+}
+
+.roman.unitType1 {
+  background-position: -60px -100px;
+}
+
 .roman.unitType2 {
   background-position: -80px -100px;
+}
+
+.roman.unitType3 {
+  background-position: -100px -100px;
+}
+
+.roman.unitType4 {
+  background-position: -120px 0;
+}
+
+.roman.unitType5 {
+  background-position: -120px -20px;
+}
+
+.roman.unitType6 {
+  background-position: -120px -40px;
+}
+
+.roman.unitType7 {
+  background-position: -120px -60px;
+}
+
+.roman.unitType8 {
+  background-position: -120px -80px;
+}
+
+.roman.unitType9 {
+  background-position: -120px -100px;
+}
+
+.roman.unitType10 {
+  background-position: -40px -100px;
 }
