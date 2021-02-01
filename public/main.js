@@ -120,13 +120,7 @@ const app = {
     this.send('updateHeroProduction', { userId, resourceId })
   },
 
-  /** @callback */
-  updateHeroProduction(data) {
-    // console.log(data)
-  },
-
   renderHero(data) {
-    console.log(data.resBonusType)
     return `Hero: (level: ${data.level} HP: ${Math.round(data.health)} +${data.resBonusPoints * 60 + 240} <select onchange="app.sendUpdateHeroProduction(${data.playerId}, this.value)">
               ${Object.entries(recourses).map(([resourceId, resource]) => `
                 <option ${data.resBonusType == resourceId ? 'selected' : ''} value="${resourceId}">${resource}</option>
@@ -138,8 +132,37 @@ const app = {
     return new Date(timestamp * 1000).toLocaleTimeString(undefined, { hour12: false })
   },
 
+  toggleGroup(el) {
+    const h = +el.getAttribute('data-height')
+    el.setAttribute('data-height', h ? 0 : 1)
+    el.style = `height: ${h ? '0px' : 'auto'}`
+  },
+
   renderVillage(village) {
-    const movements = village.troopsMoving.map(movement => this.renderMovement(movement, village.villageId))
+    let movements = ''
+    if (village.troopsMoving) {
+      const movementGroups = village.troopsMoving.reduce((acc, troops) => {
+        if (!acc[troops.data.movement.movementType]) {
+          acc[troops.data.movement.movementType] = []
+        }
+        acc[troops.data.movement.movementType].push(troops.data)
+        return acc
+      }, {})
+      movements = Object.entries(movementGroups).map(([groupId, movements]) => {
+        return `
+          <div class="movement-group">
+            <div class="movement-group-header" onclick="app.toggleGroup(this.parentNode.getElementsByClassName('movements-list')[0])">
+              <i class="movement-icon movement-${moveTypes[groupId]} ${movements[0].movement.villageIdTarget === village.villageId ? 'incoming' : 'outgoing'}"></i>
+              ${movements.length}
+            </div> 
+            <div class="movements-list" style="height: 0px" data-height="0">
+              ${movements.map(mv => this.renderMovement(mv, village.villageId)).join('')}
+            </div>
+          </div>
+        `
+      })
+    }
+    // this.renderMovementGroup
     // const slot1 = village.buildingQueue.queues[1].pop() || {}
     // const slot2 = village.buildingQueue.queues[4].pop() || {}
     // ${slot1.buildingType}<br>
@@ -151,11 +174,11 @@ const app = {
     </div>`
   },
 
-  renderMovement({ data }, villageId) {
-    const visible = Object.values(data.units).some(unit => unit > -1)
+  renderMovement(data, villageId) {
+    const visible = data.units && Object.values(data.units).some(unit => unit > -1)
     const units = visible
       ? Object.entries(data.units)
-        .filter(([unitId, canSee]) => canSee !== 0)
+        .filter(([_, canSee]) => canSee !== 0)
         .map(([unitId, canSee]) => `${canSee > 0 ? canSee : '?'}
           <i title="${tribes[data.tribeId] + unitId}" class="unit ${tribes[data.tribeId]} unitType${unitId}"></i>`)
       : ''

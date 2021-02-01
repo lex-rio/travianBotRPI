@@ -74,6 +74,18 @@ progress {
   border-left: 6px solid #f90;
 }
 
+.movement-group-header {
+  cursor: pointer;
+}
+
+.movement {
+  margin-left: 10px;
+}
+
+.movements-list {
+  overflow: hidden;
+}
+
 .movement-heal {
   background-position: -98px -225px;
 }
