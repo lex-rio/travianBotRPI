@@ -95,10 +95,10 @@ progress {
 .building-queue {
   text-align: center;
 }
-
+/* 
 .movements-block {
   position: absolute;
-}
+} */
 
 .movement-group {
   background-color: #fff;
