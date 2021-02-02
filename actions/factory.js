@@ -1,7 +1,7 @@
 "use strict"
 
 const UpdateUserAction = require('./update.user.action')
-const GetAttacksAction = require('./get.attacks.action')
+// const GetAttacksAction = require('./get.attacks.action')
 const SendFamrAction = require('./send.farm.action')
 const SendMerchantsAction = require('./action')
 const SendAttackAction = require('./action')
@@ -12,7 +12,7 @@ const UpdateHeroProductionAction = require('./update.hero.production.action')
 
 const types = {
   0: 'UpdateUserAction',
-  1: 'GetAttacksAction',
+  // 1: 'GetAttacksAction',
   2: 'SendFamrAction',
   3: 'SendMerchantsAction',
   4: 'SendAttackAction',
@@ -24,7 +24,7 @@ const types = {
 }
 const classes = {
   UpdateUserAction,
-  GetAttacksAction,
+  // GetAttacksAction,
   SendFamrAction,
   SendMerchantsAction,
   SendAttackAction,

@@ -141,11 +141,15 @@ const app = {
   renderVillage(village) {
     let movements = ''
     if (village.troopsMoving) {
-      const movementGroups = village.troopsMoving.reduce((acc, troops) => {
-        if (!acc[troops.data.movement.movementType]) {
-          acc[troops.data.movement.movementType] = []
+      const movementGroups = village.troopsMoving.reduce((acc, { data }) => {
+        if (data.movement) {
+          if (!acc[data.movement.movementType]) {
+            acc[data.movement.movementType] = []
+          }
+          acc[data.movement.movementType].push(data)
+        } esle {
+          console.log(village.villageName, data)
         }
-        acc[troops.data.movement.movementType].push(troops.data)
         return acc
       }, {})
       movements = Object.entries(movementGroups).map(([groupId, movements]) => {
@@ -205,16 +209,15 @@ const app = {
               +${village.production[resourceId]}
             </div>`
   },
-
-  updateUserAttacks(data) {
-    console.log(data)
-  }
 }
 app.ws.onmessage = ({ data }) => {
   const parsed = JSON.parse(data)
   if (app[parsed.actionName]) {
     if (parsed.actionId) {
       const timer = timers.get(parsed.actionId) || createTimer(parsed)
+      if (!timer) {
+        console.log(parsed)
+      }
       timer.value = parsed.timeLeft
     }
     app[parsed.actionName](parsed)

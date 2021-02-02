@@ -78,7 +78,7 @@ progress {
   cursor: pointer;
 }
 
-.movement {
+.movement-group .movement {
   margin-left: 10px;
 }
 
