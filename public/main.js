@@ -149,7 +149,7 @@ const app = {
         return acc
       }, {})
       movements = Object.entries(movementGroups).map(([groupId, movements]) => {
-        return movements.length > 1 : `
+        return movements.length > 1 ? `
           <div class="movement-group">
             <div class="movement-group-header" onclick="app.toggleGroup(this.parentNode.getElementsByClassName('movements-list')[0])">
               <i class="movement-icon movement-${moveTypes[groupId]} ${movements[0].movement.villageIdTarget === village.villageId ? 'incoming' : 'outgoing'}"></i>
