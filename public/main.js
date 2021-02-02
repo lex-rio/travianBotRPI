@@ -141,8 +141,10 @@ const app = {
   renderVillage(village) {
     console.log(village.troopsStationary[0])
     return `<div class="village">
-      <div class="vill-name">${village.name}(${village.population})</div>
-      <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
+      <div class="village-header">
+        <div class="vill-name">${village.name}(${village.population})</div>
+        <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
+      </div>
       <span class="movements-block">${this.renderMovements(village.troopsMoving, village.villageId)}</span>
       <span class="resources-block">${Object.keys(village.storage).map(resourceId => this.renderResources(village, resourceId)).join('')}</span>
       <div class="building-queue">${this.renderBuildingQueue(village.buildingQueue.queues)}</div>

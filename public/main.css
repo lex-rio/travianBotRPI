@@ -20,8 +20,16 @@ progress {
   display: inline-block;
 }
 
+.village-header {
+  display: flow-root;
+}
+
 .vill-name {
-  text-align: center;
+  float: right;
+}
+
+.army {
+  float: left;
 }
 
 #users .user-head {
@@ -159,10 +167,6 @@ progress {
 
 .unit_crop {
   background-position: -441px -192px;
-}
-
-.army {
-  text-align: center;
 }
 
 .unit {
