@@ -101,8 +101,11 @@ class App {
     return id
   }
 
-  async startAdventure({ playerId }) {
-    console.log(playerId)
+  async startAdventure({ userId }) {
+    const user = await getOne('users', { userId })
+    if (!user)
+      return
+    new classes.StartAdventureAction(user, this.callbacks)
   }
 }
 

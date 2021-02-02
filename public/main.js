@@ -121,14 +121,14 @@ const app = {
   },
 
   renderHero(data) {
-    console.log(data)
     return `Hero: (level: ${data.level} HP: ${Math.round(data.health)} +${data.resBonusPoints * 60 + 240} 
             <select onchange="app.sendUpdateHeroProduction(${data.playerId}, this.value)">
               ${Object.entries(recourses).map(([resourceId, resource]) => `
                 <option ${data.resBonusType == resourceId ? 'selected' : ''} value="${resourceId}">${resource}</option>
               `)}
             </select> 
-            <i onclick="app.send('startAdventure', {playerId: ${data.playerId}})" class="movement-icon movement-adventure adventure ${data.adventurePoints > 0 || 'disabled'}">)`
+            <i onclick="${data.adventurePoints} > 0 && app.send('startAdventure', {userId: ${data.playerId}})" 
+               class="movement-icon movement-adventure adventure ${data.adventurePoints > 0 || 'disabled'}">)`
   },
 
   time(timestamp) {

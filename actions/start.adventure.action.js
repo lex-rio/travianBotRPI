@@ -4,15 +4,15 @@ const Action = require('./action')
 
 class StartAdventureAction extends Action {
 
-  constructor(data, callbacks) {
-    super(data, callbacks)
-    // this.actionName = 'updateHeroProduction'
+  constructor(user, callbacks) {
+    super(user, callbacks)
+    // this.actionName = 'startAdventure'
     // this.controller = 'hero'
-    // this.action = 'addAttributePoints'
+    // this.action = 'startAdventure'
   }
 
   params() {
-    return {}
+    return {userId: user.userId}
   }
 }
 

@@ -100,10 +100,6 @@ progress {
   position: absolute;
 } */
 
-.movement-group {
-  background-color: #fff;
-}
-
 .movement-group-header {
   cursor: pointer;
 }
