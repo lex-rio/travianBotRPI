@@ -147,8 +147,8 @@ const app = {
             acc[data.movement.movementType] = []
           }
           acc[data.movement.movementType].push(data)
-        } esle {
-          console.log(village.villageName, data)
+        } else {
+          console.log('error', village.villageName, data)
         }
         return acc
       }, {})
