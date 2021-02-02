@@ -16,7 +16,11 @@ module.exports = (uri, postData) => {
     const req = https.request(options, resp => {
       let data = ''
       resp.on('data', chunk => (data += chunk))
-      resp.on('end', () => (resolve(JSON.parse(data))))
+      try {
+        resp.on('end', () => (resolve(JSON.parse(data))))
+      } catch (e) {
+        console.log(e.message, data, uri)
+      }
     })
 
     req.on("error", reject)
