@@ -67,7 +67,7 @@ class App {
   }
 
   async updateHeroProduction({ userId, resourceId }) {
-    const user = await getOne('users', { userId })
+    const user = this.initialData.users.get(userId)
     if (!user)
       return
     new classes.UpdateHeroProductionAction({ ...user, resourceId }, this.callbacks)
@@ -102,10 +102,24 @@ class App {
   }
 
   async startAdventure({ userId }) {
-    const user = await getOne('users', { userId })
+    const user = this.initialData.users.get(userId)
     if (!user)
       return
     new classes.StartAdventureAction(user, this.callbacks)
+  }
+
+  async toggleAction({state, userId, actionId}) {
+    const user = this.initialData.users.get(userId)
+    if (!user)
+      return
+    const action = user.actions.find(action => action.actionId === actionId)
+    console.log({state, userId, actionId})
+    state === 'paused' ? action.init() : action.stop()
+    return action
+  }
+
+  async sendSupport(data) {
+    console.log(data)
   }
 }
 

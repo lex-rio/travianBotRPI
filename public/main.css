@@ -37,6 +37,7 @@ progress {
 
 .vill-name {
   float: right;
+  font-size: 20px;
 }
 
 .army {
@@ -47,12 +48,18 @@ progress {
   background-color: aquamarine;
 }
 
-#users .user-head .timers span{
-  cursor: pointer;
+.timers .timer {
   margin-left: 10px;
 }
 
-.timer-updateUserData {
+.timers .pause {
+  border: #000 solid 1px;
+  border-radius: 10px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.timer-updateUserData .pause {
   background-color: #f90;
 }
 

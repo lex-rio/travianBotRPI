@@ -9,8 +9,12 @@
 </head>
 <body>
 <div id="app"></div>
-<div id="main"></div>
-<div id="users"></div>
+<form>
+  <input name="coordinates" placeholder="(0|0)">
+  <input name="time" placeholder="00:00:00">
+  <button onclick="app.send('sendSupport', Object.fromEntries(new FormData(this.closest('form'))))">send</button>
+  <div id="users"></div>
+<form>
 <div id="usersForm">
   <form>
     <label>userId<input type="text" name="userId" placeholder="userId"></label>

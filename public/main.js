@@ -18,17 +18,24 @@ const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
 const timers = new Map()
 const createTimer = ({ actionId, timeLeft, actionName, userId }) => {
+  const timerWrapper = document.createElement('span')
+  timerWrapper.className = `timer timer-${actionName}`
+  timerWrapper.title = actionName
   const timerBlock = document.createElement('span')
-  timerBlock.className = `timer-${actionName}`
-  timerBlock.title = actionName
-  timerBlock.setAttribute('data-action_id', actionId)
-  timerBlock.setAttribute('data-user_id', userId)
-  timerBlock.onclick = (e) => app.send('triggerAction', {
-    actionId: e.target.getAttribute('data-action_id'),
-    userId: e.target.getAttribute('data-user_id'),
-  })
+  
+  timerBlock.onclick = () =>
+    app.send('triggerAction', { actionId, userId })
+  
+  const pause = document.createElement('span')
+  pause.className = 'pause'
+  pause.innerHTML = timeLeft ? '⏸' : '▶'
+  pause.onclick = () =>
+    app.send('toggleAction', { state: timeLeft ? '' : 'paused', actionId, userId })
+
   timers.set(actionId, { timerBlock, value: timeLeft })
-  return timerBlock
+  timerWrapper.append(timerBlock, pause)
+  
+  return timerWrapper
 }
 
 const app = {
@@ -145,7 +152,7 @@ const app = {
     console.log(village.troopsStationary[0])
     return `<div class="village">
       <div class="village-header">
-        <div class="vill-name">${village.name}(${village.population})</div>
+        <b class="vill-name">${village.name}(${village.population})</b>
         <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
       </div>
       <span class="movements-block">${this.renderMovements(village.troopsMoving, village.villageId)}</span>
@@ -176,7 +183,7 @@ const app = {
     }    
     const movementGroups = troopsMoving.reduce((acc, { data }) => {
       if (data.movement) {
-        const key = `${data.movement.movementType}.${+(villageId === data.movement.villageIdTarget)}`
+        const key = `${data.movement.movementType}.${+(villageId === data.movement.villageIdTarget)}.${+(data.capacity > 3000)}`
         if (!acc[key]) {
           acc[key] = []
         }
