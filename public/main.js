@@ -129,7 +129,7 @@ const app = {
   },
 
   time(timestamp) {
-    return new Date(timestamp * 1000).toLocaleTimeString(undefined, { hour12: false })
+    return new Date(+timestamp * 1000).toLocaleTimeString(undefined, { hour12: false })
   },
 
   toggleGroup(el) {
@@ -137,46 +137,64 @@ const app = {
     el.setAttribute('data-height', h ? 0 : 1)
     el.style = `height: ${h ? '0px' : 'auto'}`
   },
-
+  
   renderVillage(village) {
-    let movements = ''
-    if (village.troopsMoving) {
-      const movementGroups = village.troopsMoving.reduce((acc, { data }) => {
-        if (data.movement) {
-          const key = `${data.movement.movementType}.${+(village.villageId === data.movement.villageIdTarget)}`
-          if (!acc[key]) {
-            acc[key] = []
-          }
-          acc[key].push(data)
-        } else {
-          console.log('error', village.villageName, data)
-        }
-        return acc
-      }, {})
-      movements = Object.values(movementGroups).map(movements => {
-        return movements.length > 1 ? `
-          <div class="movement-group">
-            <div class="movement-group-header" onclick="app.toggleGroup(this.parentNode.getElementsByClassName('movements-list')[0])">
-              <i class="movement-icon movement-${moveTypes[movements[0].movement.movementType]} ${movements[0].movement.villageIdTarget === village.villageId ? 'incoming' : 'outgoing'}"></i>
-              ${movements.length}
-            </div> 
-            <div class="movements-list" style="height: 0px" data-height="0">
-              ${movements.map(mv => this.renderMovement(mv, village.villageId)).join('')}
-            </div>
-          </div>
-        ` : movements.map(mv => this.renderMovement(mv, village.villageId)).join('')
-      })
-    }
-    // this.renderMovementGroup
-    // const slot1 = village.buildingQueue.queues[1].pop() || {}
-    // const slot2 = village.buildingQueue.queues[4].pop() || {}
-    // ${slot1.buildingType}<br>
-    // ${slot2.buildingType}<br>
-    return `<div id="village-${village.villageId}">
+    console.log(village.troopsStationary[0])
+    return `<div class="village">
       <div class="vill-name">${village.name}(${village.population})</div>
-      <span class="movements-block">${movements.join('')}</span>
+      <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
+      <span class="movements-block">${this.renderMovements(village.troopsMoving, village.villageId)}</span>
       <span class="resources-block">${Object.keys(village.storage).map(resourceId => this.renderResources(village, resourceId)).join('')}</span>
+      <div class="building-queue">${this.renderBuildingQueue(village.buildingQueue.queues)}</div>
     </div>`
+  },
+
+  renderBuildingQueue(queues) {
+    const slots = Object.values(queues).map(([slot]) =>
+      slot ? `<span title="${this.time(slot.finished)}" class="building buildingType${slot.buildingType}"></span>` : '')
+    return slots.join('')
+  },
+
+  renderArmy(units, villageId, tribeId = 1) {
+    return Object.entries(units).map(
+      ([unitTypeId, amount]) =>
+        `<label>
+          <input type="checkbox" name="chousenTroops[${villageId}][${unitTypeId}]">
+          <i class="unit ${tribes[tribeId]} unitType${unitTypeId}"></i>${amount}
+        </label>`
+      ).join('')
+  },
+
+  renderMovements(troopsMoving, villageId) {
+    if (!troopsMoving) {
+      return ''
+    }    
+    const movementGroups = troopsMoving.reduce((acc, { data }) => {
+      if (data.movement) {
+        const key = `${data.movement.movementType}.${+(villageId === data.movement.villageIdTarget)}`
+        if (!acc[key]) {
+          acc[key] = []
+        }
+        acc[key].push(data)
+      } else {
+        console.log('error', villageId, data)
+      }
+      return acc
+    }, {})
+    const movements = Object.values(movementGroups).map(movements => {
+      return movements.length > 1 ? `
+        <div class="movement-group">
+          <div class="movement-group-header" onclick="app.toggleGroup(this.parentNode.getElementsByClassName('movements-list')[0])">
+            <i class="movement-icon movement-${moveTypes[movements[0].movement.movementType]} ${movements[0].movement.villageIdTarget === villageId ? 'incoming' : 'outgoing'}"></i>
+            ${movements.length}
+          </div> 
+          <div class="movements-list" style="height: 0px" data-height="0">
+            ${movements.map(mv => this.renderMovement(mv, villageId)).join('')}
+          </div>
+        </div>
+      ` : movements.map(mv => this.renderMovement(mv, villageId)).join('')
+    })
+    return movements.join('')
   },
 
   renderMovement(data, villageId) {

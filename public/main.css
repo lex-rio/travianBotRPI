@@ -1,5 +1,6 @@
 body {
   font-size: 13px;
+  overflow-y:scroll;
 }
 
 progress {
@@ -74,6 +75,18 @@ progress {
   border-left: 6px solid #f90;
 }
 
+.building-queue {
+  text-align: center;
+}
+
+.movements-block {
+  position: absolute;
+}
+
+.movement-group {
+  background-color: #fff;
+}
+
 .movement-group-header {
   cursor: pointer;
 }
@@ -146,6 +159,10 @@ progress {
 
 .unit_crop {
   background-position: -441px -192px;
+}
+
+.army {
+  text-align: center;
 }
 
 .unit {
@@ -237,4 +254,32 @@ progress {
 
 .roman.unitType10 {
   background-position: -40px -100px;
+}
+
+.building {
+  display: inline-block;
+  background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/building/mini/general.png);
+  width: 42px;
+  height: 42px;
+  background-position: -90px -13px;
+}
+
+.buildingType1 {
+  background-position: -168px -126px;
+}
+
+.buildingType2 {
+  background-position: -126px -210px;
+}
+
+.buildingType3 {
+  background-position: -336px 0;
+}
+
+.buildingType10 {
+  background-position: -210px -252px
+}
+
+.buildingType11 {
+  background-position: -84px -42px;
 }
