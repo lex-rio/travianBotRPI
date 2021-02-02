@@ -143,20 +143,21 @@ const app = {
     if (village.troopsMoving) {
       const movementGroups = village.troopsMoving.reduce((acc, { data }) => {
         if (data.movement) {
-          if (!acc[data.movement.movementType]) {
-            acc[data.movement.movementType] = []
+          const key = `${data.movement.movementType}.${+(village.villageId === data.movement.villageIdTarget)}`
+          if (!acc[key]) {
+            acc[key] = []
           }
-          acc[data.movement.movementType].push(data)
+          acc[key].push(data)
         } else {
           console.log('error', village.villageName, data)
         }
         return acc
       }, {})
-      movements = Object.entries(movementGroups).map(([groupId, movements]) => {
+      movements = Object.values(movementGroups).map(movements => {
         return movements.length > 1 ? `
           <div class="movement-group">
             <div class="movement-group-header" onclick="app.toggleGroup(this.parentNode.getElementsByClassName('movements-list')[0])">
-              <i class="movement-icon movement-${moveTypes[groupId]} ${movements[0].movement.villageIdTarget === village.villageId ? 'incoming' : 'outgoing'}"></i>
+              <i class="movement-icon movement-${moveTypes[movements[0].movement.movementType]} ${movements[0].movement.villageIdTarget === village.villageId ? 'incoming' : 'outgoing'}"></i>
               ${movements.length}
             </div> 
             <div class="movements-list" style="height: 0px" data-height="0">
