@@ -31,6 +31,8 @@ progress {
 
 .village-header {
   display: flow-root;
+  background-color: lavender;
+  min-height: 24px;
 }
 
 .vill-name {
@@ -58,11 +60,8 @@ progress {
   background-color: rgb(255, 8, 0);
 }
 
-.villages>div {
+.village {
   display: flow-root;
-}
-
-.villages>div:nth-child(odd){
   background-color: aliceblue;
 }
 
