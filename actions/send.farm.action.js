@@ -20,5 +20,6 @@ class SendFarmAction extends Action {
   }
 }
 
+SendFarmAction.type = 2
 
 module.exports = SendFarmAction

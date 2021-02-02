@@ -23,4 +23,6 @@ class UpdateHeroProductionAction extends Action {
   }
 }
 
+UpdateHeroProductionAction.type = 9
+
 module.exports = UpdateHeroProductionAction

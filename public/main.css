@@ -20,6 +20,15 @@ progress {
   display: inline-block;
 }
 
+.adventure {
+  cursor: pointer;
+}
+
+.disabled {
+  opacity: .4;
+  cursor: default;
+}
+
 .village-header {
   display: flow-root;
 }
@@ -116,7 +125,7 @@ progress {
 }
 
 .movement-adventure {
-  background-position: -283px -179px;
+  background-position: -283px -180px;
 }
 
 .movement-trade, .movement-trade_back {

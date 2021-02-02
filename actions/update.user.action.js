@@ -67,4 +67,6 @@ class UpdateUserAction extends Action {
 
 }
 
+UpdateUserAction.type = 0
+
 module.exports = UpdateUserAction

@@ -1,7 +1,7 @@
 "use strict"
 
 const { add, remove, getOne, update } = require('./db')
-const { actionFactory, types, classes: { UpdateHeroProductionAction } } = require('./actions/factory')
+const { actionFactory, classes } = require('./actions/factory')
 const { User } = require('./entities/user')
 
 class App {
@@ -13,7 +13,6 @@ class App {
       success: this.transport.broadcast,
       error: this.logger.alert
     }
-    this.types = types
     this.initialData = {
       users: new Map()
     }
@@ -43,7 +42,7 @@ class App {
       initialData: {
         users: [...this.initialData.users.values()]
       },
-      types: this.types
+      types: Object.keys(classes)
     }
   }
 
@@ -71,7 +70,7 @@ class App {
     const user = await getOne('users', { userId })
     if (!user)
       return
-    new UpdateHeroProductionAction({ ...user, resourceId }, this.callbacks)
+    new classes.UpdateHeroProductionAction({ ...user, resourceId }, this.callbacks)
   }
 
   async triggerAction({ actionId, userId }) {
@@ -100,6 +99,10 @@ class App {
     const { id } = await addRowsToTable('actions', [data])
     this.initActions([{ ...(await getOne('actions', { actionId: id })) }])
     return id
+  }
+
+  async startAdventure({ playerId }) {
+    console.log(playerId)
   }
 }
 

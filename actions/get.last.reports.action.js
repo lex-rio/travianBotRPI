@@ -3,6 +3,7 @@
 const Action = require('./action')
 
 class GetLastReportsAction extends Action {
+
   constructor(data, callbacks = []) {
     super(data, callbacks)
     this.actionName = 'getLastReports'
@@ -24,5 +25,7 @@ class GetLastReportsAction extends Action {
     return data.response.reports
   }
 }
+
+GetLastReportsAction.type = 8
 
 module.exports = GetLastReportsAction
