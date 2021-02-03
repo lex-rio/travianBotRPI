@@ -99,7 +99,7 @@ progress {
 }
 
 .building-queue {
-  text-align: center;
+  float:right;
 }
 /* 
 .movements-block {
@@ -276,7 +276,8 @@ progress {
   background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/building/mini/general.png);
   width: 42px;
   height: 42px;
-  background-position: -90px -13px;
+  background-position: 40px 42px;
+  border: 1px solid #b8b2a9;
 }
 
 .buildingType1 {
@@ -295,10 +296,29 @@ progress {
   background-position: -378px -336px
 }
 
+.buildingType5 {
+  background-position: 0 -378px;
+}
+
 .buildingType10 {
   background-position: -210px -252px
 }
 
 .buildingType11 {
   background-position: -84px -42px;
+}
+
+.buildingType25 {
+  background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/building/mini/roman.png);
+  background-position: -42px -168px;
+}
+
+.levelBubble {
+  border: 1px solid #9a9389;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 50%;
+  margin: 29px 0 0 0;
 }

@@ -6,13 +6,17 @@ class StartAdventureAction extends Action {
 
   constructor(user, callbacks) {
     super(user, callbacks)
-    // this.actionName = 'startAdventure'
-    // this.controller = 'hero'
-    // this.action = 'startAdventure'
+    this.actionName = 'dialogAction'
+    this.controller = 'quest'
+    this.action = 'startAdventure'
   }
 
   params() {
-    return {userId: user.userId}
+    return {
+      command: "activate",
+      dialogId: 0,
+      questId: 991
+    }
   }
 }
 

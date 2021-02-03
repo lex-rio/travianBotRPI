@@ -30,9 +30,9 @@ const createTimer = ({ actionId, timeLeft, actionName, userId }) => {
   pause.className = 'pause'
   pause.innerHTML = timeLeft ? '⏸' : '▶'
   pause.onclick = () =>
-    app.send('toggleAction', { state: timeLeft ? '' : 'paused', actionId, userId })
+    app.send('toggleAction', { state: timeLeft ? 'running' : 'paused', actionId, userId })
 
-  timers.set(actionId, { timerBlock, value: timeLeft })
+  timers.set(actionId, { state: timeLeft ? 'running' : 'paused',timerBlock, value: timeLeft })
   timerWrapper.append(timerBlock, pause)
   
   return timerWrapper
@@ -149,7 +149,6 @@ const app = {
   },
   
   renderVillage(village) {
-    console.log(village.troopsStationary[0])
     return `<div class="village">
       <div class="village-header">
         <b class="vill-name">${village.name}(${village.population})</b>
@@ -157,13 +156,19 @@ const app = {
       </div>
       <span class="movements-block">${this.renderMovements(village.troopsMoving, village.villageId)}</span>
       <span class="resources-block">${Object.keys(village.storage).map(resourceId => this.renderResources(village, resourceId)).join('')}</span>
-      <div class="building-queue">${this.renderBuildingQueue(village.buildingQueue.queues)}</div>
+      <span class="building-queue">${this.renderBuildingQueue(village.buildingQueue.queues, village.buildings)}</span>
     </div>`
   },
 
-  renderBuildingQueue(queues) {
-    const slots = Object.values(queues).map(([slot]) =>
-      slot ? `<span title="${this.time(slot.finished)}" class="building buildingType${slot.buildingType}"></span>` : '')
+  renderBuildingQueue(queues, buildings) {
+    const slots = Object.values(queues).map(([slot]) => {
+      if (!slot) return '<span class="building"></span>'
+      console.log(slot)
+      const building = buildings.find(({ data }) => data.locationId === slot.locationId)
+      console.log(building.data)
+      return `<span title="${this.time(slot.finished)}" class="building buildingType${slot.buildingType}"><div class="levelBubble">${building.data.lvl-0+1}</div></span>
+              `
+    })
     return slots.join('')
   },
 

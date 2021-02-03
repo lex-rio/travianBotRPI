@@ -43,6 +43,7 @@ class UpdateUserAction extends Action {
     const troopsMoving = {}
     const troopsStationary = {}
     const villagesBuildingQueue = {}
+    const buildings = {}
     data.cache.map(({ name, data }) => {
       if (name === `Hero:${this.userId}`) {
         userData.hero = data
@@ -53,12 +54,15 @@ class UpdateUserAction extends Action {
         troopsStationary[name.split(':')[3]] = data.cache
       } else if (name.includes('BuildingQueue:')) {
         villagesBuildingQueue[name.split(':')[1]] = data
+      } else if (name.includes('Collection:Building:')) {
+        buildings[name.split(':')[2]] = data.cache
       }
     })
     for (const i in userData.villages) {
       userData.villages[i].buildingQueue = villagesBuildingQueue[userData.villages[i].villageId]
       userData.villages[i].troopsMoving = troopsMoving[userData.villages[i].villageId]
       userData.villages[i].troopsStationary = troopsStationary[userData.villages[i].villageId]
+      userData.villages[i].buildings = buildings[userData.villages[i].villageId]
     }
 
     return userData
