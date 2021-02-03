@@ -161,7 +161,7 @@ const app = {
       if (!slot) return '<span class="building"></span>'
       // console.log(slot)
       const building = buildings.find(({ data }) => data.locationId === slot.locationId)
-      return `<span title="${this.time(slot.finished)}" class="building buildingType${slot.buildingType}"><div class="levelBubble">${building.data.lvl - 0 + 1}</div></span>
+      return `<span title="${this.time(slot.finished)}" class="building buildingType${slot.buildingType}"><div class="levelBubble">${++building.data.lvl}</div></span>
               `
     })
     return slots.join('')
