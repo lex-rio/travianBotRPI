@@ -6,6 +6,7 @@ const fetch = require('../fetch')
 class Action {
 
   constructor(data, {success, error}) {
+    this.paused = false
     this.actionName = ''
     this.controller = ''
     this.action = ''
@@ -26,12 +27,14 @@ class Action {
 
   init () {    
     stack.set(this.actionId, this)
+    this.paused = false
   }
 
   stop () {
     if (stack.has(this.actionId)) {
       stack.delete(this.actionId)
     }
+    this.paused = true
   }
 
   params(userId) {

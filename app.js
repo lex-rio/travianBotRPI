@@ -108,13 +108,13 @@ class App {
     new classes.StartAdventureAction(user, this.callbacks)
   }
 
-  async toggleAction({state, userId, actionId}) {
+  async toggleAction({paused, userId, actionId}) {
     const user = this.initialData.users.get(userId)
     if (!user)
       return
     const action = user.actions.find(action => action.actionId === actionId)
-    console.log({state, userId, actionId})
-    state === 'paused' ? action.init() : action.stop()
+    console.log({paused, userId, actionId})
+    paused ? action.init() : action.stop()
     return action
   }
 

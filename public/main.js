@@ -17,24 +17,24 @@ const moveTypes = {
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
 const timers = new Map()
-const createTimer = ({ actionId, timeLeft, actionName, userId }) => {
+const createTimer = ({ actionId, paused, timeLeft, actionName, userId }) => {
   const timerWrapper = document.createElement('span')
   timerWrapper.className = `timer timer-${actionName}`
   timerWrapper.title = actionName
   const timerBlock = document.createElement('span')
-  
+
   timerBlock.onclick = () =>
     app.send('triggerAction', { actionId, userId })
-  
+
   const pause = document.createElement('span')
   pause.className = 'pause'
-  pause.innerHTML = timeLeft ? '⏸' : '▶'
+  pause.innerHTML = paused ? '▶' : '⏸'
   pause.onclick = () =>
-    app.send('toggleAction', { state: timeLeft ? 'running' : 'paused', actionId, userId })
+    app.send('toggleAction', { paused, actionId, userId })
 
-  timers.set(actionId, { state: timeLeft ? 'running' : 'paused',timerBlock, value: timeLeft })
+  timers.set(actionId, { paused, timerBlock, value: timeLeft })
   timerWrapper.append(timerBlock, pause)
-  
+
   return timerWrapper
 }
 
@@ -75,7 +75,7 @@ const app = {
   init({ initialData: { users } }) {
     users.map(user => this.users[user.userId] = user)
     setInterval(() => timers
-      .forEach(timer => timer.timerBlock.innerHTML = timer.value--)
+      .forEach(timer => !timer.paused && (timer.timerBlock.innerHTML = timer.value--))
       , 1000)
   },
 
@@ -147,7 +147,7 @@ const app = {
     el.setAttribute('data-height', h ? 0 : 1)
     el.style = `height: ${h ? '0px' : 'auto'}`
   },
-  
+
   renderVillage(village) {
     return `<div class="village">
       <div class="village-header">
@@ -166,7 +166,7 @@ const app = {
       console.log(slot)
       const building = buildings.find(({ data }) => data.locationId === slot.locationId)
       console.log(building.data)
-      return `<span title="${this.time(slot.finished)}" class="building buildingType${slot.buildingType}"><div class="levelBubble">${building.data.lvl-0+1}</div></span>
+      return `<span title="${this.time(slot.finished)}" class="building buildingType${slot.buildingType}"><div class="levelBubble">${building.data.lvl - 0 + 1}</div></span>
               `
     })
     return slots.join('')
@@ -179,13 +179,13 @@ const app = {
           <input type="checkbox" name="chousenTroops[${villageId}][${unitTypeId}]">
           <i class="unit ${tribes[tribeId]} unitType${unitTypeId}"></i>${amount}
         </label>`
-      ).join('')
+    ).join('')
   },
 
   renderMovements(troopsMoving, villageId) {
     if (!troopsMoving) {
       return ''
-    }    
+    }
     const movementGroups = troopsMoving.reduce((acc, { data }) => {
       if (data.movement) {
         const key = `${data.movement.movementType}.${+(villageId === data.movement.villageIdTarget)}.${+(data.capacity > 3000)}`
@@ -255,6 +255,7 @@ app.ws.onmessage = ({ data }) => {
         console.log(parsed)
       }
       timer.value = parsed.timeLeft
+      timer.paused = parsed.paused
     }
     app[parsed.actionName](parsed)
   }
