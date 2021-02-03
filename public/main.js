@@ -244,15 +244,15 @@ const app = {
 app.ws.onmessage = ({ data }) => {
   const parsed = JSON.parse(data)
   if (app[parsed.actionName]) {
-    if (parsed.actionId) {
-      const timer = timers.get(parsed.actionId) || createTimer(parsed)
-      if (!timer) {
-        console.log(parsed)
-      }
-      timer.value = parsed.timeLeft
-      timer.paused = parsed.paused
-      timer.timerBlock.className = parsed.paused ? 'paused' : 'running'
-    }
     app[parsed.actionName](parsed)
+  }
+  if (parsed.actionId) {
+    const timer = timers.get(parsed.actionId) || createTimer(parsed)
+    if (!timer) {
+      console.log(parsed)
+    }
+    timer.value = parsed.timeLeft
+    timer.paused = parsed.paused
+    timer.timerBlock.className = parsed.paused ? 'paused' : 'running'
   }
 }
