@@ -52,6 +52,14 @@ progress {
   margin-left: 10px;
 }
 
+.timer .running ~ .pause:after {
+  content: '⏸'
+}
+
+.timer .paused ~ .pause:after {
+  content: '▶'
+}
+
 .timers .pause {
   border: #000 solid 1px;
   border-radius: 50%;

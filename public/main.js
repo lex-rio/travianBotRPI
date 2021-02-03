@@ -28,9 +28,7 @@ const createTimer = ({ actionId, paused, timeLeft, actionName, userId }) => {
 
   const pause = document.createElement('span')
   pause.className = 'pause'
-  pause.innerHTML = paused ? '▶' : '⏸'
-  pause.onclick = () =>
-    app.send('toggleAction', { paused, actionId, userId })
+  pause.onclick = () => app.send('toggleAction', { paused: timers.get(actionId).paused, actionId, userId })
 
   timers.set(actionId, { paused, timerBlock, value: timeLeft })
   timerWrapper.append(timerBlock, pause)
@@ -74,9 +72,7 @@ const app = {
   /** @callback */
   init({ initialData: { users } }) {
     users.map(user => this.users[user.userId] = user)
-    setInterval(() => timers
-      .forEach(timer => !timer.paused && (timer.timerBlock.innerHTML = timer.value--))
-      , 1000)
+    setInterval(() => timers.forEach(timer => !timer.paused && (timer.timerBlock.innerHTML = timer.value--)), 1000)
   },
 
   updateUserForm(userId) {
@@ -163,9 +159,8 @@ const app = {
   renderBuildingQueue(queues, buildings) {
     const slots = Object.values(queues).map(([slot]) => {
       if (!slot) return '<span class="building"></span>'
-      console.log(slot)
+      // console.log(slot)
       const building = buildings.find(({ data }) => data.locationId === slot.locationId)
-      console.log(building.data)
       return `<span title="${this.time(slot.finished)}" class="building buildingType${slot.buildingType}"><div class="levelBubble">${building.data.lvl - 0 + 1}</div></span>
               `
     })
@@ -256,6 +251,7 @@ app.ws.onmessage = ({ data }) => {
       }
       timer.value = parsed.timeLeft
       timer.paused = parsed.paused
+      timer.timerBlock.className = parsed.paused ? 'paused' : 'running'
     }
     app[parsed.actionName](parsed)
   }
