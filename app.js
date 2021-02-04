@@ -39,10 +39,7 @@ class App {
 
   getInitialData() {
     return {
-      initialData: {
-        users: [...this.initialData.users.values()]
-      },
-      // types: Object.keys(classes)
+      users: [...this.initialData.users.values()]
     }
   }
 

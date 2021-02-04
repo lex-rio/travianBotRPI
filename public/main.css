@@ -2,6 +2,13 @@ body {
   font-size: 13px;
   overflow-y:scroll;
 }
+#coordinates{
+  border-left: darkgreen solid 9px;
+}
+
+#coordinates:invalid {
+  border-color: brown;
+}
 
 progress {
   width: 100px;
@@ -35,7 +42,7 @@ progress {
   min-height: 24px;
 }
 
-.vill-name {
+.village-name {
   float: right;
   font-size: 20px;
 }

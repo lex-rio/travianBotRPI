@@ -15,10 +15,20 @@ const moveTypes = {
   36: 'heal',
   50: 'trade'
 }
-
+const timers = new Map()
+const villages = new Map()
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
-const timers = new Map()
+const coordBlocl = document.getElementById('coordinates')
+let coordinates = coordBlocl.value
+coordBlocl.oninput = (e) => {
+  if (!e.target.checkValidity())
+    return
+  const [x, y] = e.target.value.replace('(', '').replace(')', '').split('|')
+  coordinates = { x, y }
+  console.log(coordinates)
+}
+
 const createTimer = ({ actionId, paused, timeLeft, actionName, userId }) => {
   const timerWrapper = document.createElement('span')
   timerWrapper.className = `timer timer-${actionName}`
@@ -72,7 +82,7 @@ const app = {
   send(action, data) { this.ws.send(JSON.stringify({ action, data })) },
 
   /** @callback */
-  init({ initialData: { users } }) {
+  init({ users }) {
     users.map(user => this.users[user.userId] = user)
     setInterval(() => timers.forEach(timer => !timer.paused && (timer.timerBlock.innerHTML = timer.value--)), 1000)
   },
@@ -101,15 +111,31 @@ const app = {
     this.users[data.userId] = data
   },
 
+  // createVillage(village, villagesBlock) {
+  //   const villageWraper = document.createElement('div')
+  //   const villageBlock = document.createElement('div')
+  //   const distanceBlock = document.createElement('span')
+  //   villageBlock.className = 'village'
+  //   villageWraper.append(villageBlock, distanceBlock)
+  //   villagesBlock.append(villageWraper)
+  //   villages.set(village.villageId, { villageBlock, distanceBlock, data: village })
+
+  //   return villagesBlock
+  // },
+
   /** @callback */
   updateUserData(action) {
     const userBlock = document.getElementById(`user-${action.userId}`)
     if (action.error) {
-      return userBlock.getElementsByClassName('error')[0].innerHTML = error
+      userBlock.getElementsByClassName('error')[0].innerHTML = error
     }
     const villagesBlock = userBlock.getElementsByClassName('villages')[0]
+    // action.lastResponse.villages.forEach(v => {
+    //   let village = villages.get(v.villageId)
+    //   const villageBlock = village ? village.villageBlock : this.createVillage(v, villagesBlock)
+    //   villageBlock.innerHTML = this.renderVillage(v)
+    // })
     villagesBlock.innerHTML = action.lastResponse.villages.map(village => this.renderVillage(village)).join('')
-    userBlock.appendChild(villagesBlock)
 
     const infoBlock = userBlock.getElementsByClassName('general-info')[0]
     infoBlock.innerHTML = `<b class="name">${action.lastResponse.name}(${action.lastResponse.kingdomTag}) ${tribes[action.lastResponse.tribeId]}</b> 
@@ -149,7 +175,7 @@ const app = {
   renderVillage(village) {
     return `<div class="village">
       <div class="village-header">
-        <b class="vill-name">${village.name}(${village.population})</b>
+        <b class="village-name">${village.name}(${village.population})(${village.coordinates.x}|${village.coordinates.y})</b>
         <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
       </div>
       <span class="movements-block">${this.renderMovements(village.troopsMoving, village.villageId)}</span>
@@ -250,11 +276,10 @@ app.ws.onmessage = ({ data }) => {
   }
   if (parsed.actionId) {
     const timer = timers.get(parsed.actionId) || createTimer(parsed)
-    if (!timer) {
-      console.log(parsed)
+    if (timer) {
+      timer.value = parsed.timeLeft
+      timer.paused = parsed.paused
+      timer.timerBlock.className = parsed.paused ? 'paused' : 'running'
     }
-    timer.value = parsed.timeLeft
-    timer.paused = parsed.paused
-    timer.timerBlock.className = parsed.paused ? 'paused' : 'running'
   }
 }
