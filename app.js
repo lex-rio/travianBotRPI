@@ -1,7 +1,7 @@
 "use strict"
 
 const { add, remove, getOne, update } = require('./db')
-const { actionFactory, classes } = require('./actions/factory')
+const { actionFactory } = require('./actions/factory')
 const { User } = require('./entities/user')
 
 class App {
@@ -42,7 +42,7 @@ class App {
       initialData: {
         users: [...this.initialData.users.values()]
       },
-      types: Object.keys(classes)
+      // types: Object.keys(classes)
     }
   }
 
@@ -59,34 +59,34 @@ class App {
     return user
   }
 
-  updateUser(data) {
-    // add('actions', [
-    //   {userId: data.userId, type: 8}
-    // ])
-    return update('users', { userId: data.userId }, data)
+  async updateUser(data) {
+    const user = this.initialData.users.get(data.userId)
+    if (user) {
+      const newUserData = await update('users', { userId: data.userId }, data)
+      user.setProperties(newUserData)
+    }
+    return user
   }
 
   async updateHeroProduction({ userId, resourceId }) {
     const user = this.initialData.users.get(userId)
-    if (!user)
-      return
-    new classes.UpdateHeroProductionAction({ ...user, resourceId }, this.callbacks)
+    if (user)
+      user.updateHeroProductionAction(resourceId)
   }
 
   async triggerAction({ actionId, userId }) {
     const user = this.initialData.users.get(+userId)
-    if (!user) return
-    const action = user.actions.find(action => action.actionId == actionId)
-    if (action) {
-      action.run()
-    }
+    if (user)
+      user.triggerAction(actionId)
   }
 
   async deleteUser(cond) {
     if (!cond) return
     const user = this.initialData.users.get(cond.userId)
-    user.actions.map(action => action.stop())
-    this.initialData.users.delete(cond.userId)
+    if (user) {
+      user.stopActions()
+      this.initialData.users.delete(cond.userId)
+    }
     await Promise.all([
       remove('users', cond),
       remove('villages', cond),
@@ -103,19 +103,14 @@ class App {
 
   async startAdventure({ userId }) {
     const user = this.initialData.users.get(userId)
-    if (!user)
-      return
-    new classes.StartAdventureAction(user, this.callbacks)
+    if (user)
+      user.startAdventure()
   }
 
   async toggleAction({paused, userId, actionId}) {
     const user = this.initialData.users.get(userId)
-    if (!user)
-      return
-    const action = user.actions.find(action => action.actionId === actionId)
-    console.log({paused, userId, actionId})
-    paused ? action.init() : action.stop()
-    return action
+    if (user)
+      return user.toggleAction(paused, actionId)
   }
 
   async sendSupport(data) {

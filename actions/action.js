@@ -5,7 +5,7 @@ const fetch = require('../fetch')
 
 class Action {
 
-  constructor(data, {success, error}) {
+  constructor(data, callbacks = {}) {
     this.paused = false
     this.actionName = ''
     this.controller = ''
@@ -19,8 +19,8 @@ class Action {
     this.time = data.time
     this.priority = data.priority
     this.period = data.period
-    this.success = success
-    this.errorCallback = error
+    this.success = callbacks.success || (() => {})
+    this.errorCallback = callbacks.error || (() => {})
 
     this.init()
   }

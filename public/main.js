@@ -10,6 +10,7 @@ const moveTypes = {
   9: "support_back",
   10: 'settle',
   20: 'adventure',
+  27: 'adventure',
   33: 'trade_back',
   36: 'heal',
   50: 'trade'
