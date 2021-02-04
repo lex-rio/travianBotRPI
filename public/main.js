@@ -132,7 +132,7 @@ const app = {
               `)}
             </select> 
             <i onclick="${data.adventurePoints} > 0 && app.send('startAdventure', {userId: ${data.playerId}})" 
-               class="movement-icon movement-adventure adventure ${data.adventurePoints > 0 || 'disabled'}">)`
+               class="movement-icon movement-adventure adventure ${!data.isMoving && data.adventurePoints > 0 || 'disabled'}">)`
   },
 
   time(timestamp) {
