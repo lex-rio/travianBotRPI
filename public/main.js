@@ -27,6 +27,13 @@ coordBlocl.oninput = (e) => {
   const [x, y] = e.target.value.replace('(', '').replace(')', '').split('|')
   coordinates = { x, y }
   console.log(coordinates)
+  villages.forEach(({distanceBlock, data}) => {
+    distanceBlock.innerText = Math.round(
+      Math.sqrt(
+        Math.pow(data.coordinates.x - coordinates.x, 2) + Math.pow(data.coordinates.y - coordinates.y, 2)
+      )
+    )
+  })
 }
 
 const createTimer = ({ actionId, paused, timeLeft, actionName, userId }) => {
@@ -111,17 +118,12 @@ const app = {
     this.users[data.userId] = data
   },
 
-  // createVillage(village, villagesBlock) {
-  //   const villageWraper = document.createElement('div')
-  //   const villageBlock = document.createElement('div')
-  //   const distanceBlock = document.createElement('span')
-  //   villageBlock.className = 'village'
-  //   villageWraper.append(villageBlock, distanceBlock)
-  //   villagesBlock.append(villageWraper)
-  //   villages.set(village.villageId, { villageBlock, distanceBlock, data: village })
-
-  //   return villagesBlock
-  // },
+  createVillage(village, villagesBlock) {
+    const villageBlock = document.createElement('div')
+    villageBlock.className = 'village'
+    villagesBlock.append(villageBlock)
+    return villageBlock
+  },
 
   /** @callback */
   updateUserData(action) {
@@ -130,12 +132,14 @@ const app = {
       userBlock.getElementsByClassName('error')[0].innerHTML = error
     }
     const villagesBlock = userBlock.getElementsByClassName('villages')[0]
-    // action.lastResponse.villages.forEach(v => {
-    //   let village = villages.get(v.villageId)
-    //   const villageBlock = village ? village.villageBlock : this.createVillage(v, villagesBlock)
-    //   villageBlock.innerHTML = this.renderVillage(v)
-    // })
-    villagesBlock.innerHTML = action.lastResponse.villages.map(village => this.renderVillage(village)).join('')
+    action.lastResponse.villages.forEach(data => {
+      let village = villages.get(data.villageId)
+      const villageBlock = village ? village.villageBlock : this.createVillage(data, villagesBlock)
+      village = village || { villageBlock, data }
+      villages.set(data.villageId, village)
+      villageBlock.innerHTML = this.renderVillage(data)
+      village.distanceBlock = villageBlock.getElementsByClassName(`distance`)[0]
+    })
 
     const infoBlock = userBlock.getElementsByClassName('general-info')[0]
     infoBlock.innerHTML = `<b class="name">${action.lastResponse.name}(${action.lastResponse.kingdomTag}) ${tribes[action.lastResponse.tribeId]}</b> 
@@ -173,15 +177,16 @@ const app = {
   },
 
   renderVillage(village) {
-    return `<div class="village">
-      <div class="village-header">
-        <b class="village-name">${village.name}(${village.population})(${village.coordinates.x}|${village.coordinates.y})</b>
-        <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
-      </div>
-      <span class="movements-block">${this.renderMovements(village.troopsMoving, village.villageId)}</span>
-      <span class="resources-block">${Object.keys(village.storage).map(resourceId => this.renderResources(village, resourceId)).join('')}</span>
-      <span class="building-queue">${this.renderBuildingQueue(village.buildingQueue.queues, village.buildings)}</span>
-    </div>`
+    return `<div class="village-header">
+      <b class="village-name">
+        ${village.name}(${village.population})(${village.coordinates.x}|${village.coordinates.y})
+        Distance: <span class="distance"></span>
+      </b>
+      <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
+    </div>
+    <span class="movements-block">${this.renderMovements(village.troopsMoving, village.villageId)}</span>
+    <span class="resources-block">${Object.keys(village.storage).map(resourceId => this.renderResources(village, resourceId)).join('')}</span>
+    <span class="building-queue">${this.renderBuildingQueue(village.buildingQueue.queues, village.buildings)}</span>`
   },
 
   renderBuildingQueue(queues, buildings) {
