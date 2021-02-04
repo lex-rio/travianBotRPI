@@ -71,7 +71,7 @@ class App {
   async updateHeroProduction({ userId, resourceId }) {
     const user = this.initialData.users.get(userId)
     if (user)
-      user.updateHeroProductionAction(resourceId)
+      user.updateHeroProduction(resourceId)
   }
 
   async triggerAction({ actionId, userId }) {
