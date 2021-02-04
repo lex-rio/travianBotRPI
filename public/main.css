@@ -142,6 +142,10 @@ progress {
   background-position: -66px -225px;
 }
 
+.movement-spy {
+  background-position: -267px -180px;
+}
+
 .movement-attack, .movement-reyd {
   background-position: -50px -225px;
 }

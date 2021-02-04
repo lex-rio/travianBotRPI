@@ -5,6 +5,7 @@ const moveTypes = {
   3: 'attack',
   4: 'reyd',
   5: "support",
+  6: 'spy',
   7: 'trade',
   9: "support_back",
   10: 'settle',
@@ -197,7 +198,7 @@ const app = {
       return movements.length > 1 ? `
         <div class="movement-group">
           <div class="movement-group-header" onclick="app.toggleGroup(this.parentNode.getElementsByClassName('movements-list')[0])">
-            <i class="movement-icon movement-${moveTypes[movements[0].movement.movementType]} ${movements[0].movement.villageIdTarget === villageId ? 'incoming' : 'outgoing'}"></i>
+            <i class="movement-icon movement-${moveTypes[movements[0].movement.movementType] || data.movement.movementType} ${movements[0].movement.villageIdTarget === villageId ? 'incoming' : 'outgoing'}"></i>
             ${movements.length}
           </div> 
           <div class="movements-list" style="height: 0px" data-height="0">
@@ -219,7 +220,7 @@ const app = {
       : ''
 
     return `<div class="movement">
-      <i class="movement-icon movement-${moveTypes[data.movement.movementType]} ${data.movement.villageIdTarget === villageId ? 'incoming' : 'outgoing'}"></i> 
+      <i class="movement-icon movement-${moveTypes[data.movement.movementType] || data.movement.movementType} ${data.movement.villageIdTarget === villageId ? 'incoming' : 'outgoing'}"></i> 
       ${units}
       ${data.playerName}(${data.villageName}) 
       ${+Object.values(data.movement.resources).join('') ? Object.values(data.movement.resources).join('|') : ''}
