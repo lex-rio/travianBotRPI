@@ -1,8 +1,8 @@
 const { classes: { UpdateHeroProductionAction, StartAdventureAction } } = require('./../actions/factory')
 class User {
   constructor(data) {
-    this.setProperties(data)
     this.actions = []
+    this.setProperties(data)
     this.villages = []
   }
 
@@ -10,6 +10,7 @@ class User {
     this.userId = data.userId
     this.session = data.session
     this.chatId = data.chatId
+    this.actions.forEach(action => action.setSession(data.session))
   }
 
   updateHeroProduction(resourceId) {

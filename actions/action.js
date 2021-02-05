@@ -15,7 +15,7 @@ class Action {
     this.timeLeft = 0
     this.lastResponse = {}
     this.userId = data.userId
-    this.session = data.session
+    this.setSession(data.session)
     this.time = data.time
     this.priority = data.priority
     this.period = data.period
@@ -23,6 +23,10 @@ class Action {
     this.errorCallback = callbacks.error || (() => {})
 
     this.init()
+  }
+
+  setSession(session) {
+    this.session = session
   }
 
   init () {    

@@ -57,10 +57,10 @@ class App {
   }
 
   async updateUser(data) {
-    const user = this.initialData.users.get(data.userId)
+    const user = this.initialData.users.get(+data.userId)
     if (user) {
-      const newUserData = await update('users', { userId: data.userId }, data)
-      user.setProperties(newUserData)
+      update('users', { userId: data.userId }, data)
+      user.setProperties(data)
     }
     return user
   }
