@@ -20,21 +20,20 @@ const villages = new Map()
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
 const coordBlocl = document.getElementById('coordinates')
-let coordinates = coordBlocl.value
-coordBlocl.oninput = (e) => {
-  if (!e.target.checkValidity())
+
+const calcDistance = () => {
+  if (!coordBlocl.checkValidity())
     return
-  const [x, y] = e.target.value.replace('(', '').replace(')', '').split('|')
-  coordinates = { x, y }
-  console.log(coordinates)
+  const [x, y] = coordBlocl.value.replace('(', '').replace(')', '').split('|')
   villages.forEach(({distanceBlock, data}) => {
     distanceBlock.innerText = Math.round(
       Math.sqrt(
-        Math.pow(data.coordinates.x - coordinates.x, 2) + Math.pow(data.coordinates.y - coordinates.y, 2)
+        Math.pow(data.coordinates.x - x, 2) + Math.pow(data.coordinates.y - y, 2)
       )
     )
   })
 }
+coordBlocl.oninput = calcDistance
 
 const createTimer = ({ actionId, paused, timeLeft, actionName, userId }) => {
   const timerWrapper = document.createElement('span')
@@ -149,6 +148,7 @@ const app = {
 
     const heroBlock = userBlock.getElementsByClassName('hero')[0]
     heroBlock.innerHTML = `${this.renderHero(action.lastResponse.hero)}`
+    calcDistance()
   },
 
   sendUpdateHeroProduction(userId, resourceId) {
@@ -179,7 +179,8 @@ const app = {
   renderVillage(village) {
     return `<div class="village-header">
       <b class="village-name">
-        ${village.name}(${village.population})(${village.coordinates.x}|${village.coordinates.y})
+        ${village.name}(${village.population})
+        <a onclick="coordBlocl.value='${village.coordinates.x}|${village.coordinates.y}'; calcDistance()" href="#${village.coordinates.x}|${village.coordinates.y}">(${village.coordinates.x}|${village.coordinates.y})<a>
         Distance: <span class="distance"></span>
       </b>
       <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
