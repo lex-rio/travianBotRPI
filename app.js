@@ -48,8 +48,9 @@ class App {
    * @param {UserData} data 
    */
   async addUser(data) {
-    const [user] = await add('users', [data])
-    const actions = await add('actions', [{ userId: user.userId }])
+    const [userData] = await add('users', [data])
+    const actions = await add('actions', [{ userId: userData.userId }])
+    const user = new User(userData)
     user.actions = actions.map(action => actionFactory({ ...action, ...user }, this.callbacks))
     this.initialData.users.set(user.userId, user)
 
