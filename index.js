@@ -51,18 +51,21 @@ wss.on('connection', async ws => {
     .forEach(user => user.actions
       .forEach(action => ws.send(JSON.stringify(action))))
 
-  ws.on('message', message => {
+  ws.on('message', async message => {
     const { action, data } = JSON.parse(message)
     if (typeof app[action] !== 'function') {
       return ws.send((`invalid request ${action}`))
     }
-    app[action](data)
-      .then(dataset => wss.clients.forEach(client => {
+    try {
+      const dataset = await app[action](data)
+      wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify({ actionName: action, ...dataset }))
         }
-      }))
-      .catch(console.error)
+      })
+    } catch (e) {
+      console.error(e)
+    }
   })
   ws.on('close', message => console.log('man leaved'))
 })

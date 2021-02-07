@@ -9,7 +9,8 @@ const classes = {
   // AddToBuildQueAction: require('./action'),
   GetLastReportsAction: require('./get.last.reports.action'),
   UpdateHeroProductionAction: require('./update.hero.production.action'),
-  StartAdventureAction: require('./start.adventure.action')
+  StartAdventureAction: require('./start.adventure.action'),
+  FinishBuildingAction: require('./finish.building.action')
 }
 
 const actionFactory = (actionData, callbacks) => {

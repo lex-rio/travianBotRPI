@@ -331,6 +331,11 @@ progress {
   background-position: -42px -126px;
 }
 
+.buildingType22 {
+  background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/building/mini/roman.png);
+  background-position: -168px 0;
+}
+
 .buildingType25 {
   background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/building/mini/roman.png);
   background-position: -42px -168px;

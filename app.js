@@ -1,66 +1,51 @@
 "use strict"
 
-const { add, remove, getOne, update } = require('./db')
-const { actionFactory } = require('./actions/factory')
-const { User } = require('./entities/user')
+const { getOne } = require('./db')
+const { UserService } = require('./service/UserServise')
 
 class App {
 
   constructor({ transport, logger, db }) {
     this.logger = logger
     this.transport = transport || { broadcast: _ => _ }
-    this.callbacks = {
+    this.initialData = {}
+    this.userService = new UserService({db, logger, callbacks: {
       success: this.transport.broadcast,
       error: this.logger.alert
-    }
-    this.initialData = {
-      users: new Map()
-    }
-    this.db = db
+    }})
     this.init()
   }
 
-  init() {
-    this.db.all(
-      `SELECT * from users LEFT JOIN actions USING (userId)`, [],
-      (err, rows) => {
-        if (err) return this.logger.alert(err)
-        rows.forEach(action => {
-          let user = this.initialData.users.get(action.userId)
-          if (!user) {
-            user = new User(action)
-            this.initialData.users.set(action.userId, user)
-          }
-          user.actions.push(actionFactory(action, this.callbacks))
-        })
-      }
-    )
+  async init() {
+    try {
+      this.initialData.users = await this.userService.getUsers()
+    } catch (e) {
+      this.logger.alert(e)
+    }
   }
 
   getInitialData() {
+    if (!this.initialData.users) {
+      return this.logger.alert('empty users')
+    }
     return {
       users: [...this.initialData.users.values()]
     }
   }
 
   /**
-   * @todo: refactoring
    * @param {UserData} data 
    */
   async addUser(data) {
-    const [userData] = await add('users', [data])
-    const actions = await add('actions', [{ userId: userData.userId }])
-    const user = new User(userData)
-    user.actions = actions.map(action => actionFactory({ ...action, ...user }, this.callbacks))
+    const user = await this.userService.addUser(data)
     this.initialData.users.set(user.userId, user)
-
     return user
   }
 
-  async updateUser(data) {
+  updateUser(data) {
     const user = this.initialData.users.get(+data.userId)
     if (user) {
-      update('users', { userId: data.userId }, data)
+      this.userService.updateUser(data)
       user.setProperties(data)
     }
     return user
@@ -78,18 +63,14 @@ class App {
       user.triggerAction(actionId)
   }
 
-  async deleteUser(cond) {
+  deleteUser(cond) {
     if (!cond) return
     const user = this.initialData.users.get(cond.userId)
     if (user) {
       user.stopActions()
       this.initialData.users.delete(cond.userId)
+      this.userService.deleteUser(cond)
     }
-    await Promise.all([
-      remove('users', cond),
-      remove('villages', cond),
-      remove('actions', cond),
-    ])
     return cond
   }
 

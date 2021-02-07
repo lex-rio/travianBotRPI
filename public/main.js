@@ -20,8 +20,10 @@ const villages = new Map()
 const usersContainer = document.getElementById('users')
 const usersForm = document.getElementById('usersForm')
 const coordBlocl = document.getElementById('coordinates')
+const targetVillageBlock = document.getElementById('targetVillage')
 
 const calcDistance = () => {
+  coordBlocl.value = coordBlocl.value.replaceAll('\u202c', "").replaceAll('\u202d', "")
   if (!coordBlocl.checkValidity())
     return
   const [x, y] = coordBlocl.value.replace('(', '').replace(')', '').split('|')
@@ -131,7 +133,7 @@ const app = {
       userBlock.getElementsByClassName('error')[0].innerHTML = error
     }
     const villagesBlock = userBlock.getElementsByClassName('villages')[0]
-    action.lastResponse.villages.forEach(data => {
+    action.lastResponse.villages && action.lastResponse.villages.forEach(data => {
       let village = villages.get(data.villageId)
       const villageBlock = village ? village.villageBlock : this.createVillage(data, villagesBlock)
       village = village || { villageBlock, data }
@@ -273,6 +275,20 @@ const app = {
               <br>
               +${village.production[resourceId]}
             </div>`
+  },
+
+  sendSupport(formData) {
+    // const entries = formData.entries()
+    const data = {}
+    formData.forEach((value, key) => {
+      data[key] = value
+    });
+    console.log(data)
+    
+    // app.send('sendSupport', {
+    //   destVillageId: targetVillageBlock.value,
+    //   troops: {}
+    // })
   },
 }
 app.ws.onmessage = ({ data }) => {

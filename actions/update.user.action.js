@@ -1,10 +1,13 @@
 "use strict";
 
 const Action = require('./action')
+const FinishBuildingAction = require('./finish.building.action')
 
 const attackMovementTypes = [3, 4]
 
 const notified = []
+
+const period5min = 300000
 
 const notifyAttack = (data, villageId, userId, notifyCallback = () => { }) => {
   try {
@@ -53,6 +56,7 @@ class UpdateUserAction extends Action {
       } else if (name.includes('Collection:Troops:stationary')) {
         troopsStationary[name.split(':')[3]] = data.cache
       } else if (name.includes('BuildingQueue:')) {
+        this.finishBuildings([data.queues[1], data.queues[2]], this.session)
         villagesBuildingQueue[name.split(':')[1]] = data
       } else if (name.includes('Collection:Building:')) {
         buildings[name.split(':')[2]] = data.cache
@@ -68,7 +72,18 @@ class UpdateUserAction extends Action {
     return userData
   }
 
-
+  finishBuildings (slots) {
+    slots.forEach(([slot]) => {
+      if (slot && slot.finished * 1000 - (new Date()) < period5min) {
+        new FinishBuildingAction({
+          villageId: slot.villageId,
+          queueType: slot.queueType,
+          session: this.session,
+          userId: this.userId
+        }) 
+      }
+    });
+  }
 }
 
 UpdateUserAction.type = 0
