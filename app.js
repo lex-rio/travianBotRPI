@@ -8,7 +8,6 @@ class App {
   constructor({ transport, logger, db }) {
     this.logger = logger
     this.transport = transport || { broadcast: _ => _ }
-    this.initialData = {}
     this.userService = new UserService({db, logger, callbacks: {
       success: this.transport.broadcast,
       error: this.logger.alert
@@ -18,18 +17,15 @@ class App {
 
   async init() {
     try {
-      this.initialData.users = await this.userService.getUsers()
+      this.users = await this.userService.getUsers()
     } catch (e) {
       this.logger.alert(e)
     }
   }
 
   getInitialData() {
-    if (!this.initialData.users) {
-      return this.logger.alert('empty users')
-    }
     return {
-      users: [...this.initialData.users.values()]
+      users: [...this.users.values()]
     }
   }
 
@@ -39,34 +35,34 @@ class App {
   async saveUser(data) {
     let user
     if (data.userId) {
-      user = this.initialData.users.get(+data.userId)
+      user = this.users.get(+data.userId)
       this.userService.updateUser(data)
       user.setProperties(data)
     } else {
       user = await this.userService.addUser(data)
-      this.initialData.users.set(user.userId, user)
+      this.users.set(user.userId, user)
     }
     return user
   }
 
   async updateHeroProduction({ userId, resourceId }) {
-    const user = this.initialData.users.get(userId)
+    const user = this.users.get(userId)
     if (user)
       user.updateHeroProduction(resourceId)
   }
 
   async triggerAction({ actionId, userId }) {
-    const user = this.initialData.users.get(+userId)
+    const user = this.users.get(+userId)
     if (user)
       user.triggerAction(actionId)
   }
 
   deleteUser(cond) {
     if (!cond) return
-    const user = this.initialData.users.get(cond.userId)
+    const user = this.users.get(cond.userId)
     if (user) {
       user.stopActions()
-      this.initialData.users.delete(cond.userId)
+      this.users.delete(cond.userId)
       this.userService.deleteUser(cond)
     }
     return cond
@@ -79,13 +75,13 @@ class App {
   }
 
   async startAdventure({ userId }) {
-    const user = this.initialData.users.get(userId)
+    const user = this.users.get(userId)
     if (user)
       user.startAdventure()
   }
 
   async toggleAction({paused, userId, actionId}) {
-    const user = this.initialData.users.get(userId)
+    const user = this.users.get(userId)
     if (user)
       return user.toggleAction(paused, actionId)
   }

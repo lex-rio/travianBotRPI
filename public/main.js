@@ -75,7 +75,6 @@ const app = {
         <div class="error"></div>`
       usersContainer.appendChild(userContainer)
       userContainer.getElementsByClassName('timers')[0].append(...user.actions.map(createTimer))
-      app.updateUserData(user.actions[0])
       return true
     },
     deleteProperty: (target, prop) => {
@@ -117,6 +116,7 @@ const app = {
   /** @callback */
   saveUser(data) {
     this.users[data.userId] = data
+    this.updateUserData(data.actions[0])
   },
 
   createVillage(village, villagesBlock) {
@@ -128,6 +128,7 @@ const app = {
 
   /** @callback */
   updateUserData(action) {
+    console.log(action)
     const userBlock = document.getElementById(`user-${action.userId}`)
     if (action.error) {
       userBlock.getElementsByClassName('error')[0].innerHTML = error

@@ -12,7 +12,7 @@ class Action {
     this.action = ''
     this.lastError = ''
     this.actionId = data.actionId
-    this.updatedAt = 0 
+    this.updatedAt = 0
     this.period = data.period
     this.timeLeft = data.timeLeft || data.period || 0
     this.lastResponse = {}
@@ -20,8 +20,7 @@ class Action {
     this.setSession(data.session)
     this.time = data.time
     this.priority = data.priority
-    this.success = callbacks.success || (() => {})
-    this.errorCallback = callbacks.error || (() => {})
+    this.setCallbacks(callbacks)
 
     this.init()
   }
@@ -30,14 +29,19 @@ class Action {
     this.session = session
   }
 
-  init () {
+  setCallbacks({ success, error }) {
+    this.success = success || (() => { })
+    this.errorCallback = error || (() => { })
+  }
+
+  init() {
     if (this.actionId) {
       stack.set(this.actionId, this)
       this.paused = false
     }
   }
 
-  stop () {
+  stop() {
     if (stack.has(this.actionId)) {
       stack.delete(this.actionId)
     }
@@ -45,14 +49,14 @@ class Action {
   }
 
   params(userId) {
-    return {names: [`Player:${userId}`]}
+    return { names: [`Player:${userId}`] }
   }
 
   getData(data) {
     return data
   }
 
-  async run () {
+  async run() {
     try {
       const response = await fetch(`/api/?c=${this.controller}&a=${this.action}&t${+(new Date())}`, {
         controller: this.controller,
@@ -62,7 +66,7 @@ class Action {
       })
       if (response.error) {
         this.lastError = response.error.message
-        this.errorCallback({error: response.error.message, response, userId: this.userId})
+        this.errorCallback({ error: response.error.message, response, userId: this.userId })
       } else {
         this.lastResponse = this.getData(response)
         this.updatedAt = +(new Date())

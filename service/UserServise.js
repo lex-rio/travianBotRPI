@@ -41,7 +41,7 @@ class UserService {
     const [action] = await add('actions', [{ userId: userData.userId, type: UpdateUserAction.type }])
     
     updateUserAction.actionId = action.actionId
-    updateUserAction.callbacks = this.callbacks
+    updateUserAction.setCallbacks(this.callbacks)
     updateUserAction.init()
     
     return new User({...data, ...userData, actions: [updateUserAction]})

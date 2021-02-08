@@ -47,7 +47,7 @@ const app = new App({
 wss.on('connection', async ws => {
 
   ws.send(JSON.stringify({ actionName: 'init', ...app.getInitialData() }))
-  app.initialData.users
+  app.getInitialData().users
     .forEach(user => user.actions
       .forEach(action => ws.send(JSON.stringify(action))))
 
