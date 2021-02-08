@@ -1,7 +1,7 @@
 const { classes: { UpdateHeroProductionAction, StartAdventureAction } } = require('./../actions/factory')
 class User {
   constructor(data) {
-    this.actions = []
+    this.actions = data.actions || []
     this.setProperties(data)
     this.villages = []
   }

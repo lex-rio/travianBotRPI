@@ -9,7 +9,7 @@ const notified = []
 
 const period5min = 300000
 
-const notifyAttack = (data, villageId, userId, notifyCallback = () => { }) => {
+const notifyAttack = (data, villageId, name, notifyCallback = () => { }) => {
   try {
     if (
       data.movement &&
@@ -19,7 +19,7 @@ const notifyAttack = (data, villageId, userId, notifyCallback = () => { }) => {
       !Object.values(data.units).some(unit => unit > -1)
     ) {
       const time = new Date(data.movement.timeFinish * 1000).toLocaleTimeString(undefined, { hour12: false })
-      notifyCallback(`ATTACK to user ${userId} from ${data.playerName}(${data.villageName}) at ${time}`)
+      notifyCallback(`ATTACK to ${name} from ${data.playerName}(${data.villageName}) at ${time}`)
       notified.push(data.troopId)
     }
   } catch (e) {
@@ -42,17 +42,18 @@ class UpdateUserAction extends Action {
   }
 
   getData(data) {
-    const { data: userData } = data.cache.find(({ name }) => name === `Player:${this.userId}`)
+    const { data: user } = data.cache.find(({ name }) => name.includes('Player:'))
+    this.userId = user.playerId
     const troopsMoving = {}
     const troopsStationary = {}
     const villagesBuildingQueue = {}
     const buildings = {}
     data.cache.map(({ name, data }) => {
-      if (name === `Hero:${this.userId}`) {
-        userData.hero = data
+      if (name.includes('Hero:')) {
+        user.hero = data
       } else if (name.includes('Collection:Troops:moving')) {
         troopsMoving[name.split(':')[3]] = data.cache
-        data.cache.map(({ data }) => notifyAttack(data, name.split(':')[3], this.userId, this.errorCallback))
+        data.cache.map(({ data }) => notifyAttack(data, name.split(':')[3], user.name, this.errorCallback))
       } else if (name.includes('Collection:Troops:stationary')) {
         troopsStationary[name.split(':')[3]] = data.cache
       } else if (name.includes('BuildingQueue:')) {
@@ -62,14 +63,14 @@ class UpdateUserAction extends Action {
         buildings[name.split(':')[2]] = data.cache
       }
     })
-    for (const i in userData.villages) {
-      userData.villages[i].buildingQueue = villagesBuildingQueue[userData.villages[i].villageId]
-      userData.villages[i].troopsMoving = troopsMoving[userData.villages[i].villageId]
-      userData.villages[i].troopsStationary = troopsStationary[userData.villages[i].villageId]
-      userData.villages[i].buildings = buildings[userData.villages[i].villageId]
+    for (const i in user.villages) {
+      user.villages[i].buildingQueue = villagesBuildingQueue[user.villages[i].villageId]
+      user.villages[i].troopsMoving = troopsMoving[user.villages[i].villageId]
+      user.villages[i].troopsStationary = troopsStationary[user.villages[i].villageId]
+      user.villages[i].buildings = buildings[user.villages[i].villageId]
     }
 
-    return userData
+    return user
   }
 
   finishBuildings (slots) {

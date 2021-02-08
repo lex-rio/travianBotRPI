@@ -75,6 +75,7 @@ const app = {
         <div class="error"></div>`
       usersContainer.appendChild(userContainer)
       userContainer.getElementsByClassName('timers')[0].append(...user.actions.map(createTimer))
+      app.updateUserData(user.actions[0])
       return true
     },
     deleteProperty: (target, prop) => {
@@ -96,12 +97,11 @@ const app = {
   },
 
   updateUserForm(userId) {
-    const list = document.querySelectorAll('[type="text"]')
+    const user = this.users[userId].actions[0].lastResponse
+    const list = document.querySelectorAll('#usersForm input')
     list.forEach(input => input.value = this.users[userId][input.name])
-    const button = document.querySelector('[type="button"]')
-    button.value = 'save'
-    button.onclick = e =>
-      this.send('updateUser', Object.fromEntries(new FormData(e.target.closest('form'))))
+    console.log(user)
+    document.getElementById('userName').innerText = user.name
   },
 
   /** @callback */
@@ -115,7 +115,7 @@ const app = {
   },
 
   /** @callback */
-  addUser(data) {
+  saveUser(data) {
     this.users[data.userId] = data
   },
 

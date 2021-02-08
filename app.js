@@ -36,17 +36,15 @@ class App {
   /**
    * @param {UserData} data 
    */
-  async addUser(data) {
-    const user = await this.userService.addUser(data)
-    this.initialData.users.set(user.userId, user)
-    return user
-  }
-
-  updateUser(data) {
-    const user = this.initialData.users.get(+data.userId)
-    if (user) {
+  async saveUser(data) {
+    let user
+    if (data.userId) {
+      user = this.initialData.users.get(+data.userId)
       this.userService.updateUser(data)
       user.setProperties(data)
+    } else {
+      user = await this.userService.addUser(data)
+      this.initialData.users.set(user.userId, user)
     }
     return user
   }

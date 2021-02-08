@@ -7,15 +7,6 @@ create table users (
   unique(session)
 );
 
-create table villages (
-  villageId   integer not null primary key,
-  userId      integer not null references users,
-  listId      integer not null,
-  villageName text    not null,
-  --
-  unique(villageId)
-);
-
 create table actions (
   actionId    integer not null primary key autoincrement,
   userId      integer not null references users,

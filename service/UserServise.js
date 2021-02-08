@@ -1,10 +1,10 @@
 const { User } = require('./../entities/user')
-const { actionFactory } = require('./../actions/factory')
+const { actionFactory, classes: { UpdateUserAction } } = require('./../actions/factory')
 const { add, remove, getOne, update } = require('./../db')
 
 class UserService {
 
-  constructor({db, callbacks}) {
+  constructor({ db, callbacks }) {
     this.db = db
     this.callbacks = callbacks
   }
@@ -18,13 +18,14 @@ class UserService {
             reject(err)
           }
           const users = new Map()
-          rows.forEach(action => {
-            let user = users.get(action.userId)
+          rows.forEach(row => {
+            let user = users.get(row.userId)
             if (!user) {
-              user = new User(action)
-              users.set(action.userId, user)
+              user = new User(row)
+              users.set(row.userId, user)
             }
-            user.actions.push(actionFactory(action, this.callbacks))
+            if (row.actionId)
+              user.actions.push(actionFactory(row, this.callbacks))
           })
           resolve(users)
         }
@@ -33,11 +34,17 @@ class UserService {
   }
 
   async addUser(data) {
-    const [userData] = await add('users', [data])
-    const actions = await add('actions', [{ userId: userData.userId }])
-    const user = new User(userData)
-    user.actions = actions.map(action => actionFactory({ ...action, ...user }, this.callbacks))
-    return user
+    const updateUserAction = new UpdateUserAction(data)
+    const player = await updateUserAction.run()
+    
+    const [userData] = await add('users', [{ ...data, userId: player.playerId }])
+    const [action] = await add('actions', [{ userId: userData.userId, type: UpdateUserAction.type }])
+    
+    updateUserAction.actionId = action.actionId
+    updateUserAction.callbacks = this.callbacks
+    updateUserAction.init()
+    
+    return new User({...data, ...userData, actions: [updateUserAction]})
   }
 
   updateUser(data) {
@@ -47,7 +54,6 @@ class UserService {
   deleteUser(cond) {
     return Promise.all([
       remove('users', cond),
-      remove('villages', cond),
       remove('actions', cond),
     ])
   }
