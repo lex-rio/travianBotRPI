@@ -31,6 +31,7 @@ class UpdateUserAction extends Action {
 
   constructor(actionData, callbacks) {
     super(actionData, callbacks)
+    this.c = callbacks
     this.period = actionData.period || 60
     this.actionName = 'updateUserData'
     this.controller = 'player'
@@ -42,7 +43,7 @@ class UpdateUserAction extends Action {
   }
 
   getData(data) {
-    const { data: user } = data.cache.find(({ name }) => name.includes('Player:'))
+    const { data: user } = data.cache.find(({ name }) => name.indexOf('Player:') === 0)
     this.userId = user.playerId
     const troopsMoving = {}
     const troopsStationary = {}
