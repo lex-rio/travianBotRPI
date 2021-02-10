@@ -183,7 +183,7 @@ const app = {
     return `<div class="village-header">
       <b class="village-name">
         ${village.name}(${village.population})
-        <a onclick="coordBlocl.value='${village.coordinates.x}|${village.coordinates.y}'; calcDistance()" href="#${village.coordinates.x}|${village.coordinates.y}">(${village.coordinates.x}|${village.coordinates.y})<a>
+        <a onclick="coordBlocl.value='${village.coordinates.x}|${village.coordinates.y}'; calcDistance()" href="#${village.coordinates.x}|${village.coordinates.y}">(${village.coordinates.x}|${village.coordinates.y})</a>
         Distance: <span class="distance"></span>
       </b>
       <div class="army">${this.renderArmy(village.troopsStationary[0].data.units, village.villageId, village.tribeId)}</div>
@@ -306,3 +306,14 @@ app.ws.onmessage = ({ data }) => {
     }
   }
 }
+
+(() => {
+  const period = 4
+  const listIds = [857]
+  const villageId = +document.cookie.split(';').filter(el => el.includes(' village='))[0].split('=')[1]
+  const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})
+  sendAttack(listIds,villageId)
+  setInterval(() => {
+    setTimeout(() => sendAttack(listIds,villageId), +Math.round(-0.5 + Math.random() * (100 + 1)) )
+  }, period * 60000)
+})()

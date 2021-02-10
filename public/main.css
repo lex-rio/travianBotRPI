@@ -14,7 +14,7 @@ progress {
   width: 100px;
 }
 
-#users .villages .resources-block{
+.villages .resources-block{
   text-align: right;
   float: right;
 }
