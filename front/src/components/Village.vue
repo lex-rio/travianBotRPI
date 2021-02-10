@@ -9,7 +9,7 @@
       <div class="army">
         <label v-for="(troop, i) in army" :key="i">
           <input type="checkbox" :name="`chousenTroops[${i}]`">
-          <i :class="`unit ${tribes[village.tribeId]} unitType${i}`"></i>{{troop.amount}}
+          <i :class="`unit ${tribes[village.tribeId]} unitType${i}`"></i>{{troop}}
         </label>
       </div>
     </div>
