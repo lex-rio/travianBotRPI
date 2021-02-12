@@ -7,19 +7,28 @@ const App = require('./app')
 const telegram = require('./telegram')
 const { db } = require('./db')
 const { router } = require('./api')
+const frontDirPath = './front/dist'
+
+function readStatic (dir, files = {}) {
+  const dirItems = fs.readdirSync(dir)
+  dirItems.forEach((item) => {
+    if (fs.lstatSync(`${dir}/${item}`).isDirectory()) {
+      readStatic(`${dir}/${item}`, files)
+    } else {
+      files[`${dir.slice(frontDirPath.length)}/${item}`] = fs.readFileSync(`${dir}/${item}`, 'utf8')
+    }
+  })
+  return files
+}
 
 // serve static
-const staticFilesBinnary = fs.readdirSync('./public')
-  .reduce((filesObject, file) => {
-    filesObject[file] = fs.readFileSync(`./public/${file}`, 'utf8')
-    return filesObject
-  }, {})
-
+const staticFilesBinnary = readStatic(frontDirPath)
+// console.log(Object.keys(staticFilesBinnary))
 const server = http.createServer((request, response) => {
   const uri = request.url.substring(1) || 'index.html'
-  if (staticFilesBinnary[uri]) {
+  if (staticFilesBinnary[`/${uri}`]) {
     response.writeHead(200)
-    return response.end(staticFilesBinnary[uri])
+    return response.end(staticFilesBinnary[`/${uri}`])
   }
   if (router[uri]) {
     const result = router[uri]()

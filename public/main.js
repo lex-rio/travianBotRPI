@@ -307,13 +307,13 @@ app.ws.onmessage = ({ data }) => {
   }
 }
 
-// (() => {
-//   const period = 4
-//   const listIds = [857]
-//   const villageId = +document.cookie.split(';').filter(el => el.includes(' village='))[0].split('=')[1]
-//   const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})
-//   sendAttack(listIds,villageId)
-//   setInterval(() => {
-//     setTimeout(() => sendAttack(listIds,villageId), +Math.round(-0.5 + Math.random() * (100 + 1)) )
-//   }, period * 60000)
-// })()
+(() => {
+  const period = 3
+  const listIds = [857]
+  const villageId = +document.cookie.split(';').filter(el => el.includes(' village='))[0].split('=')[1]
+  const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})
+  sendAttack(listIds,villageId)
+  setInterval(() => {
+    setTimeout(() => sendAttack(listIds,villageId), +Math.round(-0.5 + Math.random() * (50 + 1)) )
+  }, period * 60000)
+})()
