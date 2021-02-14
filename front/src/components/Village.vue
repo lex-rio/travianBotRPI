@@ -44,12 +44,15 @@
         +{{village.production[i]}}
       </div>
     </span>
-    <span class="building-queue"></span>
+    <span class="building-queue">
+      <span v-for="([slot], i) in buildingQueue" :key="i" 
+        :class="`building buildingType${slot.buildingType}`"
+        :title="time(slot.finished)"></span>
+    </span>
   </div>
 </template>
 
 <script>
-//{ "troopId": "641275", "tribeId": "1", "playerId": "2288", "playerName": "кокос", "villageId": "536559644", "villageName": "0путь", "villageIdLocation": "536559644", "villageNameLocation": "", "playerIdLocation": "2288", "playerNameLocation": "", "filter": "", "villageIdSupply": "536559644", "status": "transit", "units": { "2": "67" }, "supplyTroops": "67", "capacity": 1340, "movement": { "troopId": "641275", "villageIdStart": "536363019", "villageIdTarget": "536559644", "playerIdTarget": "-1", "coordinateID": 0, "timeStart": "1613137003", "timeFinish": "1613143492", "movementType": "9", "resources": { "1": 0, "2": 0, "3": 0, "4": 0 }, "treasures": "0", "spyTarget": "0", "catapultTarget1": "0", "catapultTarget2": "0", "merchants": "0" } }
 import { tribes, recourses, moveTypes } from "./../../constants";
 export default {
   name: 'Village',
@@ -57,7 +60,6 @@ export default {
     village: Object
   },
   mounted() {
-    console.log(this.village.troopsMoving)
     this.movingGroup = this.village.troopsMoving.reduce((acc, { data }) => {
       if (data.movement) {
         const key = `${data.movement.movementType}.${+(this.village.villageId === data.movement.villageIdTarget)}.${+(data.capacity > 3000)}`
@@ -65,7 +67,7 @@ export default {
           acc[key] = {
             data: [],
             opened: false,
-            type: this.village.villageId === data.movement.villageIdTarget ? 'incoming' : 'outgonig'
+            type: this.village.villageId === data.movement.villageIdTarget ? 'incoming' : 'outgoing'
           }
         }
         acc[key].data.push(data)
@@ -74,7 +76,6 @@ export default {
       }
       return acc
     }, {})
-    console.log(this.movingGroup)
   },
   data() {
     return { tribes, recourses, moveTypes, movingGroup: {} }
@@ -86,7 +87,10 @@ export default {
   },
   computed: {
     army: function() { return this.village.troopsStationary[0].data.units },
-    troopsMovingGroup: function() { return this.movingGroup }
+    troopsMovingGroup: function() { return this.movingGroup },
+    buildingQueue: function() { 
+      return Object.values(this.village.buildingQueue.queues).filter(([slot]) => slot)
+    }
   }
 }
 </script>

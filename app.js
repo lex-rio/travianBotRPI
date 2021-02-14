@@ -46,7 +46,7 @@ class App {
   }
 
   async updateHeroProduction({ userId, resourceId }) {
-    const user = this.users.get(userId)
+    const user = this.users.get(+userId)
     if (user)
       user.updateHeroProduction(resourceId)
   }
@@ -59,10 +59,10 @@ class App {
 
   deleteUser(cond) {
     if (!cond) return
-    const user = this.users.get(cond.userId)
+    const user = this.users.get(+cond.userId)
     if (user) {
       user.stopActions()
-      this.users.delete(cond.userId)
+      this.users.delete(+cond.userId)
       this.userService.deleteUser(cond)
     }
     return cond
@@ -75,13 +75,13 @@ class App {
   }
 
   async startAdventure({ userId }) {
-    const user = this.users.get(userId)
+    const user = this.users.get(+userId)
     if (user)
       user.startAdventure()
   }
 
   async toggleAction({paused, userId, actionId}) {
-    const user = this.users.get(userId)
+    const user = this.users.get(+userId)
     if (user)
       return user.toggleAction(paused, actionId)
   }

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="user-head">
-      <a href="#"><i class="action_edit action"></i></a>
-      <a href="#"><i class="action_delete action"></i></a>
+      <a href="#" @click="api.setCurrentUser(user)"><i class="action_edit action"></i></a>
+      <a href="#" @click="api.deleteUser(user)"><i class="action_delete action"></i></a>
       <span class="general-info">
         <b class="name">
           {{ userData.name }} ({{userData.kingdomTag}}) {{ tribes[userData.tribeId] }}
@@ -30,6 +30,7 @@ import Hero from "./Hero.vue";
 import Village from "./Village.vue";
 export default {
   name: "User",
+  inject: ['api'],
   props: {
     user: Object,
   },
@@ -38,7 +39,7 @@ export default {
   },
   computed: {
     userData: function () {
-      return this.user.actions[0].lastResponse;
+      return this.user.lastResponse;
     },
   },
   components: {

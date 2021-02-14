@@ -14,11 +14,12 @@ class User {
   }
 
   updateHeroProduction(resourceId) {
-    new UpdateHeroProductionAction({ ...this, resourceId })
+    (new UpdateHeroProductionAction({ ...this, resourceId }))
+      .run()
   }
 
   startAdventure() {
-    new StartAdventureAction(this)
+    (new StartAdventureAction(this)).run()
   }
   
   triggerAction(id) {

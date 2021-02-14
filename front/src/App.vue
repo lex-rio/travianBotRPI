@@ -1,48 +1,60 @@
 <template>
   <div>
     <div class="users">
-      <User v-for="user in users" :key="user.userId" :user="user"></User>
+      <User v-for="[userId, user] in users" :key="userId" :user="user"></User>
     </div>
     <form>
-      <input type="hidden" name="userId" id="userId">
-      <input type="text" name="session" id="sessionId" placeholder="session">
+      <input type="hidden" v-model="api.currentUser.userId" />
+      <input
+        type="text"
+        v-model="api.currentUser.session"
+        placeholder="session"
+      />
       <span id="userName"></span>
-      <button type="button" onclick="app.send('saveUser', Object.fromEntries(new FormData(this.closest('form'))))">save</button>
+      <button type="button" @click="api.saveUser(api.currentUser)">save</button>
     </form>
   </div>
 </template>
 
 <script>
-import User from './components/User.vue'
+import User from "./components/User.vue";
+import ApiClient from "./apiClient";
 
 export default {
-  name: 'App',
-  mounted() {
-    const ws = new WebSocket(`ws://${window.location.hostname}:8082`)
-    ws.onmessage = ({ data }) => {
-      const parsed = JSON.parse(data)
-      if (this[parsed.actionName]) {
-        this[parsed.actionName](parsed)
-      }
-    }
-  },
-  methods: {
-    init: function ({ users }) {
-      this.usersData = users
-    }
-  },
+  name: "App",
   data() {
-    return { usersData: [] }
+    return {
+      usersData: new Map(),
+      api: new ApiClient(),
+    };
+  },
+  created() {
+    this.api.registerCallbacks({
+      init: ({ users }) =>
+        users.forEach((user) =>
+          this.usersData.set(+user.userId, user.actions[0])
+        ),
+      // saveUser: (data) => console.log(data),
+      updateUserData: (user) => this.usersData.set(+user.userId, user),
+      saveUser: ({ actions }) => this.usersData.set(+actions[0].userId, actions[0]),
+      // deleteUser: ({ actions }) => this.usersData.set(+actions[0].userId, actions[0]),
+    });
+  },
+  provide: function () {
+    return {
+      api: this.api,
+      currentUser: this.currentUser,
+    };
   },
   computed: {
-    users () {
-      return this.usersData
-    }
+    users() {
+      return this.usersData;
+    },
   },
   components: {
-    User
-  }
-}
+    User,
+  },
+};
 </script>
 
 <style>

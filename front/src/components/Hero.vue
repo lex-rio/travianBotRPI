@@ -1,7 +1,7 @@
 <template>
   <span class="hero">
     Hero: (level: {{hero.level}} HP: {{Math.round(hero.health)}} +{{hero.resBonusPoints * 60 + 240}}
-    <select>
+    <select @change="updateProduction" >
       <option v-for="(recourse, i) in recourses" :value="i" :key="i">{{recourse}}</option>
     </select>
     <i @click="startAdventure" 
@@ -14,6 +14,7 @@ import { recourses } from './../../constants'
 
 export default {
   name: 'Hero',
+  inject: ['api'],
   props: {
     hero: Object
   },
@@ -21,6 +22,9 @@ export default {
     return { recourses }
   },
   methods: {
+    updateProduction: function(e) {
+      this.api.updateHeroProduction({userId: this.hero.playerId, resourceId: e.target.value })
+    },
     startAdventure: function() {
       if (!this.hero.isMoving && this.hero.adventurePoints > 0) {
         console.log('startAdventure')
