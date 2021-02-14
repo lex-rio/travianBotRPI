@@ -1,5 +1,6 @@
 <template>
   <div>
+    <input type="text" v-model="coordinates">
     <div class="users">
       <User v-for="[userId, user] in users" :key="userId" :user="user"></User>
     </div>
@@ -26,6 +27,7 @@ export default {
     return {
       usersData: new Map(),
       api: new ApiClient(),
+      coordinates: '(0|0)'
     };
   },
   created() {
@@ -34,7 +36,6 @@ export default {
         users.forEach((user) =>
           this.usersData.set(+user.userId, user.actions[0])
         ),
-      // saveUser: (data) => console.log(data),
       updateUserData: (user) => this.usersData.set(+user.userId, user),
       saveUser: ({ actions }) => this.usersData.set(+actions[0].userId, actions[0]),
       // deleteUser: ({ actions }) => this.usersData.set(+actions[0].userId, actions[0]),
@@ -52,7 +53,7 @@ export default {
     },
   },
   components: {
-    User,
+    User
   },
 };
 </script>

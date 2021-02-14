@@ -17,6 +17,10 @@ class ApiClient {
     }
   }
 
+  send(action, data) {
+    this.ws.send(JSON.stringify({ action, data }))
+  }
+
   setCurrentUser({ session, userId }) {
     this.currentUser.userId = userId
     this.currentUser.session = session

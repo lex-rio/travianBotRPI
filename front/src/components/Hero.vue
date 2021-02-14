@@ -27,8 +27,7 @@ export default {
     },
     startAdventure: function() {
       if (!this.hero.isMoving && this.hero.adventurePoints > 0) {
-        console.log('startAdventure')
-        //app.send('startAdventure', {userId: this.hero.playerId})
+        this.api.send('startAdventure', {userId: this.hero.playerId})
       }
     }
   }
