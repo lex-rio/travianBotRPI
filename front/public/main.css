@@ -290,6 +290,10 @@ progress {
   background-position: -40px -100px;
 }
 
+.queueType4:not(.paid) .levelBubble{
+  box-shadow: inset 0 0 0 2px #f6d81f, 0 0 1px 0 #000;
+}
+
 .building {
   display: inline-block;
   background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/building/mini/general.png);
@@ -325,6 +329,11 @@ progress {
 
 .buildingType11 {
   background-position: -84px -42px;
+}
+
+.buildingType15 {
+  background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/building/mini/roman.png);
+  background-position: -42px -42px;
 }
 
 .buildingType17 {

@@ -24,8 +24,9 @@ class UserService {
               user = new User(row)
               users.set(row.userId, user)
             }
-            if (row.actionId)
-              user.actions.push(actionFactory(row, this.callbacks))
+            if (row.actionId) {
+              user.actions[row.actionId] = actionFactory(row, this.callbacks)
+            }
           })
           resolve(users)
         }
@@ -43,8 +44,11 @@ class UserService {
     updateUserAction.actionId = action.actionId
     updateUserAction.setCallbacks(this.callbacks)
     updateUserAction.init()
+
+    const actions = {}
+    actions[updateUserAction.actionId] = updateUserAction
     
-    return new User({...data, ...userData, actions: [updateUserAction]})
+    return new User({...data, ...userData, actions})
   }
 
   updateUser(data) {

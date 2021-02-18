@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input type="text" v-model="coordinates">
+    <input type="text" :value="`(${api.coordinates.x}|${api.coordinates.y})`">
     <div class="users">
       <User v-for="[userId, user] in users" :key="userId" :user="user"></User>
     </div>
@@ -20,38 +20,42 @@
 <script>
 import User from "./components/User.vue";
 import ApiClient from "./apiClient";
+import Timer from "./Timer";
 
 export default {
   name: "App",
   data() {
     return {
-      usersData: new Map(),
+      users: new Map(),
       api: new ApiClient(),
-      coordinates: '(0|0)'
+      timer: new Timer()
     };
   },
   created() {
     this.api.registerCallbacks({
       init: ({ users }) =>
         users.forEach((user) =>
-          this.usersData.set(+user.userId, user.actions[0])
+          this.users.set(+user.userId, user)
         ),
-      updateUserData: (user) => this.usersData.set(+user.userId, user),
-      saveUser: ({ actions }) => this.usersData.set(+actions[0].userId, actions[0]),
-      // deleteUser: ({ actions }) => this.usersData.set(+actions[0].userId, actions[0]),
+      updateUserData: (userdata) => {
+        const user = this.users.get(+userdata.userId)
+        user.actions[userdata.actionId] = userdata
+      },
+      saveUser: ({ actions }) => this.users.set(+actions[0].userId, actions[0]),
+      // deleteUser: ({ actions }) => this.users.set(+actions[0].userId, actions[0]),
     });
   },
   provide: function () {
     return {
       api: this.api,
-      currentUser: this.currentUser,
+      timer: this.timer
     };
   },
-  computed: {
-    users() {
-      return this.usersData;
-    },
-  },
+  // computed: {
+  //   users() {
+  //     return this.users;
+  //   },
+  // },
   components: {
     User
   },

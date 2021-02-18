@@ -7,6 +7,8 @@ class ApiClient {
     session: ''
   }
 
+  coordinates = {x:0,y:0}
+
   constructor() {
     this.ws = new WebSocket(`ws://${window.location.hostname}:8082`)
     this.ws.onmessage = ({ data }) => {

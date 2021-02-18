@@ -1,7 +1,7 @@
 <template>
   <span class="hero">
     Hero: (level: {{hero.level}} HP: {{Math.round(hero.health)}} +{{hero.resBonusPoints * 60 + 240}}
-    <select @change="updateProduction" >
+    <select @change="updateProduction" v-model="selectedResource">
       <option v-for="(recourse, i) in recourses" :value="i" :key="i">{{recourse}}</option>
     </select>
     <i @click="startAdventure" 
@@ -19,7 +19,10 @@ export default {
     hero: Object
   },
   data() {
-    return { recourses }
+    return {
+      selectedResource: this.hero.resBonusType,
+      recourses
+    }
   },
   methods: {
     updateProduction: function(e) {
@@ -35,15 +38,4 @@ export default {
 </script>
 
 <style scoped>
-.movement-icon {
-  display: inline-block;
-  background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/movement.png);
-  width: 16px;
-  height: 16px
-}
-
-.movement-adventure {
-  cursor: pointer;
-  background-position: -283px -180px;
-}
 </style>

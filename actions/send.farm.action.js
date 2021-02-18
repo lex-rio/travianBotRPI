@@ -14,8 +14,8 @@ class SendFarmAction extends Action {
 
   params() {
     return {
-      listIds: [857],
-      villageId: 536068116
+      listIds: [748],//[857],
+      villageId: 536920026//536068116
     }
   }
 }

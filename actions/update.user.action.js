@@ -31,7 +31,6 @@ class UpdateUserAction extends Action {
 
   constructor(actionData, callbacks) {
     super(actionData, callbacks)
-    this.c = callbacks
     this.period = actionData.period || 60
     this.actionName = 'updateUserData'
     this.controller = 'player'

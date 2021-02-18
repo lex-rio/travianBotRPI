@@ -15,7 +15,14 @@
         {{ userData.population }}
       </span>
       <Hero :hero="userData.hero"></Hero>
-      <span class="timers"></span>
+      <span class="timers">
+        <span @click="api.send('triggerAction', { actionId: action.actionId, userId: user.userId })" 
+          v-for="(action, i) in user.actions" 
+          :key="i"
+          :class="`timer timer-${action.actionName}`">
+          {{action.timeLeft}}
+        </span>
+      </span>
     </div>
     <div class="villages">
       <Village v-for="(village, i) in userData.villages" :village="village" :key="i"></Village>
@@ -30,17 +37,20 @@ import Hero from "./Hero.vue";
 import Village from "./Village.vue";
 export default {
   name: "User",
-  inject: ['api'],
+  inject: ['api', 'timer'],
   props: {
     user: Object,
+  },
+  created() {
+    this.timer.subscribe(() => Object.values(this.user.actions).forEach(action => action.timeLeft--))
   },
   data() {
     return { tribes };
   },
   computed: {
     userData: function () {
-      return this.user.lastResponse;
-    },
+      return Object.values(this.user.actions)[0].lastResponse;
+    }
   },
   components: {
     Hero, Village
