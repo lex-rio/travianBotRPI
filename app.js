@@ -68,10 +68,9 @@ class App {
     return cond
   }
 
-  async addAction(data) {
-    const { id } = await addRowsToTable('actions', [data])
-    this.initActions([{ ...(await getOne('actions', { actionId: id })) }])
-    return id
+  async addAction({userId, type, params}) {
+    const user = this.users.get(+userId)
+    return this.userService.addAction(user, type, params)
   }
 
   async startAdventure({ userId }) {

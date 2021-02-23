@@ -6,11 +6,15 @@ const apiUrl = 'api.telegram.org/bot'
 const botId = process.env.BOT_ID
 
 module.exports = {
-  log: (chatId, message) =>
-    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=${chatId}&text=${typeof message === 'string' ? message : JSON.stringify(message)}`),
+  log: (chatId, message) => {
+    const m = typeof message === 'string' ? message : JSON.stringify(message)
+    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=${chatId}&text=messagefrom-${process.env.ENV} ${m}`)
+  },
 
-  alert: message =>
-    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=-486239249&text=${typeof message === 'string' ? message : JSON.stringify(message)}`),
+  alert: message => {
+    const m = typeof message === 'string' ? message : JSON.stringify(message)
+    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=-486239249&text=messagefrom-${process.env.ENV} ${m}`)
+  },
 
   getMessages: () =>
     new Promise((resolve, reject) => {

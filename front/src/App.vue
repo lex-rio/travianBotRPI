@@ -41,8 +41,8 @@ export default {
         const user = this.users.get(+userdata.userId)
         user.actions[userdata.actionId] = userdata
       },
-      saveUser: ({ actions }) => this.users.set(+actions[0].userId, actions[0]),
-      // deleteUser: ({ actions }) => this.users.set(+actions[0].userId, actions[0]),
+      saveUser: (user) => this.users.set(user.userId, user),
+      deleteUser: ({ userId }) => this.users.delete(userId),
     });
   },
   provide: function () {
@@ -51,11 +51,6 @@ export default {
       timer: this.timer
     };
   },
-  // computed: {
-  //   users() {
-  //     return this.users;
-  //   },
-  // },
   components: {
     User
   },

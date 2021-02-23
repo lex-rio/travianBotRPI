@@ -1,6 +1,10 @@
 <template>
   <div class="village">
     <div class="village-header">
+      <select v-model="selectedListId">
+        <option v-for="({ listId, listName }, i) in farmLists" :value="listId" :key="i">{{listName}}</option>
+      </select>
+      <a href="#" @click="api.send('addAction', { userId: village.playerId, type: 2, params: {listIds: [selectedListId], villageId: village.villageId} })">addFarm</a>
       <b class="village-name">
         {{village.name}}({{village.population}})
         <a>({{village.coordinates.x}}|{{village.coordinates.y}})</a>
@@ -19,7 +23,7 @@
           <i :class="`movement-icon movement-${moveTypes[group.data[0].movement.movementType] || group.data[0].movement.movementType} ${group.type}`"></i>
             {{group.data.length}}
         </div> 
-        <div class="movements-list" :style="`height: ${group.data.length === 1 || group.opened ? 'auto': '0px'}`">
+        <div class="movements-list" :style="`height: ${group.data.length < 6 ? 'auto': '0px'}`">
           <div class="movement" v-for="(data, i) in group.data" :key="i">
             <i :class="`movement-icon movement-${moveTypes[data.movement.movementType] || data.movement.movementType} ${group.type}`"></i>
             <template v-for="(amount, unitId) in data.units">
@@ -61,10 +65,18 @@ export default {
   name: 'Village',
   inject: ['api'],
   props: {
-    village: Object
+    village: Object,
+    farmLists: Object
   },
   data() {
-    return { tribes, recourses, moveTypes, movingGroup: {}, countDounTimers: [] }
+    return { 
+      tribes,
+      recourses,
+      moveTypes,
+      movingGroup: {},
+      countDounTimers: [],
+      selectedListId: null
+    }
   },
   methods: {
     time: function(timestamp) {

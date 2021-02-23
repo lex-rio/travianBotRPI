@@ -319,7 +319,7 @@ app.ws.onmessage = ({ data }) => {
 })()
 
 (() => {
-  const period = 3
+  const period = 10
   const listIds = [748]
   const villageId = +document.cookie.split(';').filter(el => el.includes(' village='))[0].split('=')[1]
   const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})

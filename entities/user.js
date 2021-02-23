@@ -1,9 +1,8 @@
-const { classes: { UpdateHeroProductionAction, StartAdventureAction } } = require('./../actions/factory')
+const { classes: { UpdateHeroProductionAction, StartAdventureAction, InitUserAction } } = require('./../actions/factory')
 class User {
   constructor(data) {
     this.actions = data.actions || {}
     this.setProperties(data)
-    this.villages = []
   }
 
   setProperties(data) {
@@ -11,6 +10,21 @@ class User {
     this.session = data.session
     this.chatId = data.chatId
     Object.values(this.actions).forEach(action => action.setSession(data.session))
+  }
+
+  async init() {
+    const initUserAction = new InitUserAction({session: this.session})
+    const { userId, villages } = await initUserAction.run()
+    this.userId = userId
+    this.villages = villages
+  }
+
+  export() {
+    return {
+      session: this.session,
+      chatId: this.chatId,
+      userId: this.userId
+    }
   }
 
   updateHeroProduction(resourceId) {

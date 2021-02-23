@@ -14,7 +14,7 @@
         <i class="unit_population general-sprite-img"></i>:
         {{ userData.population }}
       </span>
-      <Hero :hero="userData.hero"></Hero>
+      <Hero v-if="userData.hero" :hero="userData.hero"></Hero>
       <span class="timers">
         <span @click="api.send('triggerAction', { actionId: action.actionId, userId: user.userId })" 
           v-for="(action, i) in user.actions" 
@@ -25,7 +25,7 @@
       </span>
     </div>
     <div class="villages">
-      <Village v-for="(village, i) in userData.villages" :village="village" :key="i"></Village>
+      <Village v-for="(village, i) in userData.villages" :village="village" :farmLists="userData.farmLists" :key="i"></Village>
     </div>
     <div class="error"></div>
   </div>

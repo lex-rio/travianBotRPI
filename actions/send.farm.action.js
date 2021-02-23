@@ -6,17 +6,15 @@ class SendFarmAction extends Action {
 
   constructor(data, callbacks) {
     super(data, callbacks)
-    this.period = data.period || 240
+    this.period = data.period || 600
     this.actionName = 'startFarmListRaid'
     this.controller = 'troops'
     this.action = 'startFarmListRaid'
+    this.paramsData = JSON.parse(data.params)
   }
 
   params() {
-    return {
-      listIds: [748],//[857],
-      villageId: 536920026//536068116
-    }
+    return this.paramsData
   }
 }
 

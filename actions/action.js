@@ -14,7 +14,7 @@ class Action {
     this.actionId = data.actionId
     this.updatedAt = 0
     this.period = data.period
-    this.timeLeft = data.timeLeft || data.period || 0
+    this.timeLeft = 0
     this.lastResponse = {}
     this.userId = data.userId
     this.setSession(data.session)
@@ -48,8 +48,8 @@ class Action {
     this.paused = true
   }
 
-  params(userId) {
-    return { names: [`Player:${userId}`] }
+  params() {
+    return {}
   }
 
   getData(data) {
@@ -61,7 +61,7 @@ class Action {
       const response = await fetch(`/api/?c=${this.controller}&a=${this.action}&t${+(new Date())}`, {
         controller: this.controller,
         action: this.action,
-        params: this.params(this.userId),
+        params: this.params(),
         session: this.session
       })
       if (response.error) {

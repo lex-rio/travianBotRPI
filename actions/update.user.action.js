@@ -31,25 +31,49 @@ class UpdateUserAction extends Action {
 
   constructor(actionData, callbacks) {
     super(actionData, callbacks)
-    this.period = actionData.period || 60
+    this.period = actionData.period || 360
     this.actionName = 'updateUserData'
-    this.controller = 'player'
-    this.action = 'getAll'
+    this.controller = 'cache'
+    this.action = 'get'
+    this.villagesNames = this.setVillageIds(actionData.villages)
+  }
+
+  setVillageIds(villages) {
+    const names = []
+    villages.forEach(villageId => {
+      names.push(`Collection:Troops:moving:${villageId}`)
+      names.push(`Collection:Troops:stationary:${villageId}`)
+      names.push(`BuildingQueue:${villageId}`)
+      names.push(`Collection:Building:${villageId}`)
+      names.push(`Collection:Building:${villageId}`)
+      
+    })
+    return names
   }
 
   params() {
-    return { deviceDimension: "1920:1080" }
+    return {
+      names: [
+        `Player:${this.userId}`,
+        `Hero:${this.userId}`,
+        'Collection:Village:own',
+        'Collection:FarmList:',
+        ...this.villagesNames
+      ]
+    }
   }
 
-  getData(data) {
-    const { data: user } = data.cache.find(({ name }) => name.indexOf('Player:') === 0)
+  getData({ cache }) {
+    const { data: user } = cache.find(({ name }) => name.indexOf('Player:') === 0)
     this.userId = user.playerId
     const troopsMoving = {}
     const troopsStationary = {}
     const villagesBuildingQueue = {}
     const buildings = {}
-    data.cache.map(({ name, data }) => {
-      if (name.includes('Hero:')) {
+    cache.map(({ name, data }) => {
+      if (name === 'Collection:FarmList:') {
+        user.farmLists = data.cache.map(({data}) => data)
+      } else if (name.includes('Hero:')) {
         user.hero = data
       } else if (name.includes('Collection:Troops:moving')) {
         troopsMoving[name.split(':')[3]] = data.cache
@@ -86,7 +110,7 @@ class UpdateUserAction extends Action {
     });
   }
 }
-
+// "Collection:FarmList:"
 UpdateUserAction.type = 0
 
 module.exports = UpdateUserAction

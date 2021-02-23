@@ -18,14 +18,15 @@ class UserService {
             reject(err)
           }
           const users = new Map()
-          rows.forEach(row => {
+          rows.forEach(async row => {
             let user = users.get(row.userId)
             if (!user) {
               user = new User(row)
-              users.set(row.userId, user)
+              await user.init()
+              users.set(user.userId, user)
             }
             if (row.actionId) {
-              user.actions[row.actionId] = actionFactory(row, this.callbacks)
+              user.actions[row.actionId] = actionFactory({...row, ...user}, this.callbacks)
             }
           })
           resolve(users)
@@ -35,20 +36,21 @@ class UserService {
   }
 
   async addUser(data) {
-    const updateUserAction = new UpdateUserAction(data)
-    const player = await updateUserAction.run()
+    const user = new User(data)
+    await user.init()
     
-    const [userData] = await add('users', [{ ...data, userId: player.playerId }])
-    const [action] = await add('actions', [{ userId: userData.userId, type: UpdateUserAction.type }])
-    
-    updateUserAction.actionId = action.actionId
-    updateUserAction.setCallbacks(this.callbacks)
-    updateUserAction.init()
+    const [userData] = await add('users', [user.export()])
+    const [action] = await add('actions', [{ userId: user.userId, type: UpdateUserAction.type }])
 
-    const actions = {}
-    actions[updateUserAction.actionId] = updateUserAction
+    const updateUserAction = new UpdateUserAction({
+      ...action,
+      ...userData,
+      villages: user.villages
+    }, this.callbacks)
+
+    user.actions[updateUserAction.actionId] = updateUserAction
     
-    return new User({...data, ...userData, actions})
+    return user
   }
 
   updateUser(data) {
@@ -60,6 +62,12 @@ class UserService {
       remove('users', cond),
       remove('actions', cond),
     ])
+  }
+
+  async addAction(user, type, params) {
+    const [action] = await add('actions', [{ userId: user.userId, type, params: JSON.stringify(params) }])
+    user.actions[action.actionId] = actionFactory({...action, ...user}, this.callbacks)
+    return user
   }
 }
 

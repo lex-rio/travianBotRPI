@@ -1,0 +1,4 @@
+USER="pi"
+HOST="192.168.0.100"
+REMOTE_PATH="/home/pi/projects"
+WORK_PATH="/home/alex/projects"

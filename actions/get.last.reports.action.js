@@ -11,7 +11,7 @@ class GetLastReportsAction extends Action {
     this.action = 'getLastReports'
   }
 
-  params(userId) {
+  params() {
     return {
       collection: "own",
       start: 0,

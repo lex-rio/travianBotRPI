@@ -1,6 +1,7 @@
 "use strict"
 
 const classes = {
+  InitUserAction: require('./init.user.action'),
   UpdateUserAction: require('./update.user.action'),
   SendFamrAction: require('./send.farm.action'),
   // SendMerchantsAction: require('./action'),

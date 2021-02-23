@@ -1,6 +1,6 @@
 <template>
   <span class="hero">
-    Hero: (level: {{hero.level}} HP: {{Math.round(hero.health)}} +{{hero.resBonusPoints * 60 + 240}}
+    Hero: (level: {{hero.level}} HP: {{Math.round(hero.health)}} +{{hero.resBonusPoints * 20 + 80}}
     <select @change="updateProduction" v-model="selectedResource">
       <option v-for="(recourse, i) in recourses" :value="i" :key="i">{{recourse}}</option>
     </select>
