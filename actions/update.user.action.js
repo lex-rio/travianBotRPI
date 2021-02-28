@@ -58,6 +58,7 @@ class UpdateUserAction extends Action {
         `Hero:${this.userId}`,
         'Collection:Village:own',
         'Collection:FarmList:',
+        'Collection:Notifications:',
         ...this.villagesNames
       ]
     }
@@ -75,6 +76,8 @@ class UpdateUserAction extends Action {
         user.farmLists = data.cache.map(({data}) => data)
       } else if (name.includes('Hero:')) {
         user.hero = data
+      } else if (name.includes('Collection:Notifications:')) {
+        user.notifications = data.cache
       } else if (name.includes('Collection:Troops:moving')) {
         troopsMoving[name.split(':')[3]] = data.cache
         data.cache.map(({ data }) => notifyAttack(data, name.split(':')[3], user.name, this.errorCallback))

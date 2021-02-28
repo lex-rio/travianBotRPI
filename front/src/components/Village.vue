@@ -50,11 +50,16 @@
       </div>
     </span>
     <span class="building-queue">
-      <span v-for="([slot], i) in buildingQueue" :key="i"
-        :class="`building  buildingType${slot.buildingType} queueType${slot.queueType} ${+slot.paid && 'paid'}`"
-        :title="time(slot.finished)">
-        <div class="levelBubble">{{building(slot.locationId).data.lvl - 0 + 1}}</div>
-      </span>
+      <template v-for="([slot], i) in buildingQueue" >
+        <span v-if="slot" :key="i"
+          :class="`building  buildingType${slot.buildingType} queueType${slot.queueType} ${+slot.paid && 'paid'}`"
+          :title="estimate" @mouseover="estimate = timeLeft(slot.finished)">
+          <div class="levelBubble">{{building(slot.locationId).data.lvl - 0 + 1}}</div>
+          <progress v-if="slot.timeStart > 0" :value="currentTime - slot.timeStart" :max="slot.finished - slot.timeStart" class="buildingProgress"></progress>
+        </span>
+        <span v-else class="building" :key="i+'2'"></span>
+      </template>
+      <span class="building" @click="openCustomQueue"><div class="openQueue" >(123)</div></span>
     </span>
   </div>
 </template>
@@ -69,13 +74,15 @@ export default {
     farmLists: Object
   },
   data() {
-    return { 
+    return {
       tribes,
       recourses,
       moveTypes,
       movingGroup: {},
       countDounTimers: [],
-      selectedListId: null
+      selectedListId: null,
+      currentTime: Math.trunc((new Date()).getTime() / 1000),
+      estimate: ''
     }
   },
   methods: {
@@ -87,6 +94,9 @@ export default {
     },
     building: function(locationId) {
       return this.village.buildings.find(({ data }) => data.locationId === locationId)
+    },
+    openCustomQueue: function(e) {
+      console.log(e)
     }
   },
   computed: {
@@ -114,8 +124,23 @@ export default {
       Math.pow(this.village.coordinates.x - this.api.coordinates.x, 2) + Math.pow(this.village.coordinates.y - this.api.coordinates.y, 2)
     ))},
     buildingQueue: function() { 
-      return Object.values(this.village.buildingQueue.queues).filter(([slot]) => slot)
+      return Object.values(this.village.buildingQueue.queues)
     }
   }
 }
 </script>
+
+<style>
+.openQueue {
+  cursor: pointer;
+  line-height: 78px;
+}
+.building {
+  position: relative;
+}
+.buildingProgress{
+  width: 100%;
+  position: absolute;
+  top: -5px;
+}
+</style>
