@@ -1,6 +1,9 @@
-const { User } = require('./../entities/user')
-const { actionFactory, classes: { UpdateUserAction } } = require('./../actions/factory')
-const { add, remove, getOne, update } = require('./../db')
+const { User } = require('../entities/user')
+const {
+  actionFactory,
+  classes: { UpdateUserAction, SendSupportAction, GetKingdomAttacks }
+} = require('../actions/factory')
+const { add, remove, getOne, update } = require('../db')
 
 class UserService {
 
@@ -13,22 +16,23 @@ class UserService {
     return new Promise((resolve, reject) => {
       this.db.all(
         `SELECT * from users LEFT JOIN actions USING (userId)`, [],
-        (err, rows) => {
+        async (err, rows) => {
           if (err) {
             reject(err)
           }
-          const users = new Map()
-          rows.forEach(async row => {
+          const users = rows.reduce((users, row) => {
             let user = users.get(row.userId)
             if (!user) {
               user = new User(row)
-              await user.init()
-              users.set(user.userId, user)
+              users.set(row.userId, user)
             }
-            if (row.actionId) {
-              user.actions[row.actionId] = actionFactory({...row, ...user}, this.callbacks)
-            }
-          })
+            user.actions[row.actionId] = actionFactory({...row, ...user}, this.callbacks)
+            return users
+          }, new Map())
+          await Promise.all(
+            [...users.values()].map(user => user.init())
+          )
+          
           resolve(users)
         }
       )
@@ -39,14 +43,12 @@ class UserService {
     const user = new User(data)
     await user.init()
     
-    const [userData] = await add('users', [user.export()])
+    add('users', [user.export()])
     const [action] = await add('actions', [{ userId: user.userId, type: UpdateUserAction.type }])
 
-    const updateUserAction = new UpdateUserAction({
-      ...action,
-      ...userData,
-      villages: user.villages
-    }, this.callbacks)
+    const updateUserAction = new UpdateUserAction(action, this.callbacks)
+
+    updateUserAction.init(user)
 
     user.actions[updateUserAction.actionId] = updateUserAction
     
@@ -64,10 +66,21 @@ class UserService {
     ])
   }
 
+  sendSupport(user, data) {
+    return (new SendSupportAction({...user, ...data}, this.callbacks)).run()
+  }
+
   async addAction(user, type, params) {
     const [action] = await add('actions', [{ userId: user.userId, type, params: JSON.stringify(params) }])
     user.actions[action.actionId] = actionFactory({...action, ...user}, this.callbacks)
     return user
+  }
+
+  async addKingdomAttacksMonit(user) {
+    const [action] = await add('actions', [{ userId: user.userId, type: GetKingdomAttacks.type }])
+    const getKingdomAttacks = new GetKingdomAttacks({...action, ...user}, this.callbacks)
+    user.actions[getKingdomAttacks.actionId] = getKingdomAttacks
+    return getKingdomAttacks
   }
 }
 

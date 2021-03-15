@@ -14,6 +14,7 @@ class Action {
     this.actionId = data.actionId
     this.updatedAt = 0
     this.period = data.period
+    this.triggerTime = data.triggerTime
     this.timeLeft = 0
     this.lastResponse = {}
     this.userId = data.userId
@@ -21,21 +22,22 @@ class Action {
     this.time = data.time
     this.priority = data.priority
     this.setCallbacks(callbacks)
-
-    this.init()
   }
 
   setSession(session) {
     this.session = session
   }
 
-  setCallbacks({ success, error }) {
+  setCallbacks({ success, error, broadcast }) {
     this.success = success || (() => { })
+    this.broadcast = broadcast || (() => { })
     this.errorCallback = error || (() => { })
   }
 
-  init() {
-    if (this.actionId) {
+  init(user) {
+    this.userId = user.userId
+    this.setSession(user.session)
+    if (this.actionId && this.period) {
       stack.set(this.actionId, this)
       this.paused = false
     }
@@ -68,16 +70,16 @@ class Action {
         this.lastError = response.error.message
         this.errorCallback({ error: response.error.message, response, userId: this.userId })
       } else {
-        this.lastResponse = this.getData(response)
+        this.lastResponse = await this.getData(response)
         this.updatedAt = +(new Date())
       }
     } catch (e) {
       this.errorCallback(e.message)
     }
-    if (this.period) {
+    if (this.period && !this.triggerTime) {
       this.timeLeft = this.period
     } else {
-      stack.delete(this.actionId)
+      this.stop()
     }
     this.success(this)
     return this.lastResponse

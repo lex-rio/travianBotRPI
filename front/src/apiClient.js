@@ -1,6 +1,6 @@
 class ApiClient {
 
-  callbacks = {}
+  callbacks = []
 
   currentUser = {
     userId: null,
@@ -10,12 +10,15 @@ class ApiClient {
   coordinates = {x:0,y:0}
 
   constructor() {
-    this.ws = new WebSocket(`ws://${window.location.hostname}:8082`)
+    // this.ws = new WebSocket(`ws://${window.location.hostname}:8082`)
+    this.ws = new WebSocket(`ws://wb2.ddns.net:8082`)
     this.ws.onmessage = ({ data }) => {
       const parsed = JSON.parse(data)
-      if (this.callbacks[parsed.actionName]) {
-        this.callbacks[parsed.actionName](parsed)
-      }
+      this.callbacks.forEach(([name, cb]) => {
+        if (name === parsed.actionName) {
+          cb(parsed)
+        }
+      })
     }
   }
 
@@ -37,9 +40,7 @@ class ApiClient {
   }
 
   registerCallbacks(callbacks) {
-    Object.entries(callbacks).forEach(([name, cb]) => {
-      this.callbacks[name] = cb
-    })
+    Object.entries(callbacks).forEach(entry => this.callbacks.push(entry))
   }
 
   saveUser(data) {

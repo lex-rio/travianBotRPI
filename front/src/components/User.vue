@@ -15,6 +15,7 @@
         {{ userData.population }}
       </span>
       <Hero v-if="userData.hero" :hero="userData.hero"></Hero>
+      <a href="#" @click="api.send('setUserOnWatch', user.userId)">Make Watcher</a>
       <span class="timers">
         <span @click="api.send('triggerAction', { actionId: action.actionId, userId: user.userId })" 
           v-for="(action, i) in user.actions" 
@@ -22,6 +23,10 @@
           :class="`timer timer-${action.actionName}`">
           {{action.timeLeft}}
         </span>
+      </span>
+      <span class="notifications">
+        <a v-for="notification in userData.notifications" :key="notification.data.type" 
+          :class="`notification clickable movement_${notifications[notification.data.type] || notification.data.type}_medium_flat_black`"></a>
       </span>
     </div>
     <div class="villages">
@@ -32,7 +37,7 @@
 </template>
 
 <script>
-import { tribes } from "./../../constants";
+import { tribes, notifications } from "./../../constants";
 import Hero from "./Hero.vue";
 import Village from "./Village.vue";
 export default {
@@ -45,7 +50,7 @@ export default {
     this.timer.subscribe(() => Object.values(this.user.actions).forEach(action => action.timeLeft--))
   },
   data() {
-    return { tribes };
+    return { tribes, notifications };
   },
   computed: {
     userData: function () {
@@ -59,7 +64,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
 .action {
   display: inline-block;
   background-image: url(https://cdn.traviantools.net/game/0.98/layout/images/sprites/general.png);
@@ -76,5 +81,11 @@ export default {
 }
 .user-head {
   background-color: aquamarine;
+}
+.notifications {
+  float: right;
+}
+.notification {
+  display: inline-block;
 }
 </style>

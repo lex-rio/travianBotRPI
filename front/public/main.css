@@ -9,9 +9,12 @@ body {
 #coordinates:invalid {
   border-color: brown;
 }
-
+select {
+  display: inline;
+}
 progress {
   width: 100px;
+  background-position: revert
 }
 
 .villages .resources-block{

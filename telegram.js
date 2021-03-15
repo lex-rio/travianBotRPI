@@ -13,7 +13,14 @@ module.exports = {
 
   alert: message => {
     const m = typeof message === 'string' ? message : JSON.stringify(message)
-    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=-486239249&text=messagefrom-${process.env.ENV} ${m}`)
+    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=-486239249&text=alertfrom-${process.env.ENV} ${m}`)
+  },
+
+  broadcast: message => {
+    console.log({message})
+    const m = typeof message === 'string' ? message : JSON.stringify(message)
+    console.log({m})
+    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=-554455171&text=${m}`)
   },
 
   getMessages: () =>

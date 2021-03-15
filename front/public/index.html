@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="stylesheet" href="https://cdn.traviantools.net/game/0.98/layout/css/ltr.css">
     <link rel="stylesheet" href="/main.css">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <link rel="preload" href="https://cdn.traviantools.net/game/0.98/layout/images/sprites/unit/small/unit/small.png" as="image" media="(max-width: 600px)">
@@ -13,9 +14,20 @@
     <link rel="preload" href="https://cdn.traviantools.net/game/0.98/layout/images/sprites/building/mini/roman.png" as="image" media="(min-width: 601px)">
   </head>
   <body>
+    <nav id="topnav" class="topnav">
+      <a id="menu-home" href="/">Home</a>
+      <a id="menu-villages" href="/villages">Villages</a>
+    </nav>
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
+    <script>
+      document.querySelectorAll('#topnav a').forEach(el => el.addEventListener('click', e => {
+        e.preventDefault()
+        history.pushState(e.target.id, '', e.target.pathname);
+        dispatchEvent(new PopStateEvent('popstate', { state: e.target.id }))
+      }))
+    </script>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>

@@ -1,17 +1,19 @@
 "use strict"
 
 const { getOne } = require('./db')
-const { UserService } = require('./service/UserServise')
+const { UserService, MonitorService } = require('./services')
 
 class App {
 
   constructor({ transport, logger, db }) {
     this.logger = logger
     this.transport = transport || { broadcast: _ => _ }
-    this.userService = new UserService({db, logger, callbacks: {
+    const callbacks = {
       success: this.transport.broadcast,
+      broadcast: this.logger.broadcast,
       error: this.logger.alert
-    }})
+    }
+    this.userService = new UserService({db, callbacks})
     this.init()
   }
 
@@ -85,8 +87,17 @@ class App {
       return user.toggleAction(paused, actionId)
   }
 
+  async setUserOnWatch(userId) {
+    const user = this.users.get(+userId)
+    if (user)
+      return this.userService.addKingdomAttacksMonit(user)
+  }
+
   async sendSupport(data) {
     console.log(data)
+    const user = this.users.get(+data.userId)
+    if (user)
+      return this.userService.sendSupport(user, data)
   }
 }
 

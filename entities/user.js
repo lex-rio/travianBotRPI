@@ -17,6 +17,8 @@ class User {
     const { userId, villages } = await initUserAction.run()
     this.userId = userId
     this.villages = villages
+    this.initActions()
+    return this
   }
 
   export() {
@@ -47,6 +49,10 @@ class User {
     const action = this.findAction(id)
     paused ? action.init() : action.stop()
     return action
+  }
+
+  initActions() {
+    Object.values(this.actions).forEach(action => action.init(this))
   }
 
   stopActions() {

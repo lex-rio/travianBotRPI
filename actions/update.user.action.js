@@ -3,7 +3,7 @@
 const Action = require('./action')
 const FinishBuildingAction = require('./finish.building.action')
 
-const attackMovementTypes = [3, 4]
+const attackMovementTypes = {3: 'Attack', 4: 'Raid'}
 
 const notified = []
 
@@ -14,12 +14,12 @@ const notifyAttack = (data, villageId, name, notifyCallback = () => { }) => {
     if (
       data.movement &&
       !notified.includes(data.troopId) &&
-      attackMovementTypes.includes(+data.movement.movementType) &&
+      attackMovementTypes[+data.movement.movementType] &&
       data.movement.villageIdTarget == villageId &&
       !Object.values(data.units).some(unit => unit > -1)
     ) {
       const time = new Date(data.movement.timeFinish * 1000).toLocaleTimeString(undefined, { hour12: false })
-      notifyCallback(`ATTACK to ${name} from ${data.playerName}(${data.villageName}) at ${time}`)
+      notifyCallback(`${attackMovementTypes[+data.movement.movementType]} to ${name} from ${data.playerName}(${data.villageName}) at ${time}`)
       notified.push(data.troopId)
     }
   } catch (e) {
@@ -30,15 +30,16 @@ const notifyAttack = (data, villageId, name, notifyCallback = () => { }) => {
 class UpdateUserAction extends Action {
 
   constructor(actionData, callbacks) {
+    actionData.period = actionData.period || 360
     super(actionData, callbacks)
-    this.period = actionData.period || 360
+
     this.actionName = 'updateUserData'
     this.controller = 'cache'
     this.action = 'get'
-    this.villagesNames = this.setVillageIds(actionData.villages)
+    // this.villagesNames = this.setVillageIds(actionData.villages)
   }
 
-  setVillageIds(villages) {
+  setVillageIds(villages = []) {
     const names = []
     villages.forEach(villageId => {
       names.push(`Collection:Troops:moving:${villageId}`)
@@ -59,9 +60,15 @@ class UpdateUserAction extends Action {
         'Collection:Village:own',
         'Collection:FarmList:',
         'Collection:Notifications:',
+        //"Collection:ChatRoom:",
         ...this.villagesNames
       ]
     }
+  }
+
+  init(user) {
+    this.villagesNames = this.setVillageIds(user.villages)
+    super.init(user)
   }
 
   getData({ cache }) {

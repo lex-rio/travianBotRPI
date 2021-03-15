@@ -14,5 +14,10 @@ module.exports = {
     33: 'trade_back',
     36: 'heal',
     50: 'trade'
+  },
+  notifications: {
+    8: 'achievement',
+    21: 'adventure',
+    116: 'support'
   }
 }

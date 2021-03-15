@@ -308,7 +308,7 @@ app.ws.onmessage = ({ data }) => {
 }
 
 (() => {
-  const period = 3
+  const period = 5
   const listIds = [857]
   const villageId = +document.cookie.split(';').filter(el => el.includes(' village='))[0].split('=')[1]
   const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})
@@ -319,12 +319,36 @@ app.ws.onmessage = ({ data }) => {
 })()
 
 (() => {
-  const period = 10
-  const listIds = [748]
-  const villageId = +document.cookie.split(';').filter(el => el.includes(' village='))[0].split('=')[1]
-  const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})
-  sendAttack(listIds,villageId)
-  setInterval(() => {
-    setTimeout(() => sendAttack(listIds,villageId), +Math.round(-0.5 + Math.random() * (50 + 1)) )
-  }, period * 60000)
-})()
+
+    const period = 5
+    const listIds = [1160]
+    const villageId = 535609373
+    const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})
+    sendAttack(listIds,villageId)
+    setInterval(() => {
+      setTimeout(() => sendAttack(listIds,villageId), +Math.round(-0.5 + Math.random() * (50 + 1)) )
+    }, period * 60000)
+  })()
+
+  (() => {
+
+    const period = 111
+    const listIds = [53]
+    const villageId = 536395787
+    const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})
+    setInterval(() => {
+      setTimeout(() => sendAttack(listIds,villageId), +Math.round(-0.5 + Math.random() * (50 + 1)) )
+    }, period * 60000)
+  })()
+
+
+// (() => {
+//   const period = 10
+//   const listIds = [748]
+//   const villageId = +document.cookie.split(';').filter(el => el.includes(' village='))[0].split('=')[1]
+//   const sendAttack = (listIds, villageId) => Travian.writeRequest("troops/startFarmListRaid", {listIds, villageId})
+//   sendAttack(listIds,villageId)
+//   setInterval(() => {
+//     setTimeout(() => sendAttack(listIds,villageId), +Math.round(-0.5 + Math.random() * (50 + 1)) )
+//   }, period * 60000)
+// })()

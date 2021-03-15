@@ -11,7 +11,9 @@ const classes = {
   GetLastReportsAction: require('./get.last.reports.action'),
   UpdateHeroProductionAction: require('./update.hero.production.action'),
   StartAdventureAction: require('./start.adventure.action'),
-  FinishBuildingAction: require('./finish.building.action')
+  FinishBuildingAction: require('./finish.building.action'),
+  GetKingdomAttacks: require('./get.kingdom.attacks.action'),
+  // GetCeilsInfo: require('./get.ceils.info.js')
 }
 
 const actionFactory = (actionData, callbacks) => {

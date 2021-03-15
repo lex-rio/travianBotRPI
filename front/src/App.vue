@@ -19,15 +19,14 @@
 
 <script>
 import User from "./components/User.vue";
-import ApiClient from "./apiClient";
 import Timer from "./Timer";
 
 export default {
   name: "App",
+  inject: ['api'],
   data() {
     return {
       users: new Map(),
-      api: new ApiClient(),
       timer: new Timer()
     };
   },
@@ -43,13 +42,13 @@ export default {
       },
       saveUser: (user) => this.users.set(user.userId, user),
       deleteUser: ({ userId }) => this.users.delete(userId),
-    });
+    })
   },
   provide: function () {
     return {
       api: this.api,
       timer: this.timer
-    };
+    }
   },
   components: {
     User

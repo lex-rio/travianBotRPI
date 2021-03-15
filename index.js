@@ -23,20 +23,20 @@ function readStatic (dir, files = {}) {
 
 // serve static
 const staticFilesBinnary = readStatic(frontDirPath)
-// console.log(Object.keys(staticFilesBinnary))
+
 const server = http.createServer((request, response) => {
-  const uri = request.url.substring(1) || 'index.html'
-  if (staticFilesBinnary[`/${uri}`]) {
-    response.writeHead(200)
-    return response.end(staticFilesBinnary[`/${uri}`])
+  const uri = request.url.substring(1)
+  const contentTypes = {
+    'css': 'text/css',
+    'js': 'text/javascript'
   }
-  if (router[uri]) {
-    const result = router[uri]()
-    response.writeHead(200)
-    return response.end(JSON.stringify(result))
-  }
-  response.writeHead(404)
-  return response.end()
+  response.setHeader('Content-Type', contentTypes[uri.split('.').pop()] || 'text/html')
+  response.writeHead(200)
+  return response.end(
+    router[uri]
+      ? JSON.stringify(router[uri]())
+      : staticFilesBinnary[`/${uri}`] || staticFilesBinnary['/index.html']
+  )
 }).listen(process.env.PORT, () => console.log(`listen http port ${process.env.PORT}`))
 
 const wss = new WebSocket.Server({
@@ -54,9 +54,9 @@ const app = new App({
 })
 
 wss.on('connection', async ws => {
-
-  ws.send(JSON.stringify({ actionName: 'init', ...app.getInitialData() }))
-  app.getInitialData().users
+  const initialData = app.getInitialData()
+  ws.send(JSON.stringify({ actionName: 'init', ...initialData }))
+  initialData.users
     .forEach(user => Object.values(user.actions)
       .forEach(action => ws.send(JSON.stringify(action))))
 
