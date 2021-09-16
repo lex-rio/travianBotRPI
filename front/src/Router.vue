@@ -9,6 +9,8 @@
 import App from './App.vue'
 import Monitor from './monitor.vue'
 import ApiClient from "./apiClient";
+import time from "./time"
+
 const NotFoundComponent = { template: '<p>Page not found</p>' }
 const routes = {
   '/': Monitor,
@@ -19,6 +21,7 @@ export default {
   name: "Router",
   data: () => ({
     api: new ApiClient(),
+    timelib: time,
     currentRoute: window.location.pathname
   }),
 
@@ -43,7 +46,10 @@ export default {
   },
 
   provide: function () {
-    return {api: this.api}
+    return {
+      api: this.api,
+      timelib: this.timelib
+    }
   }
 };
 </script>

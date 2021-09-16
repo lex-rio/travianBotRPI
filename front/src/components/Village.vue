@@ -1,9 +1,9 @@
 <template>
   <div class="village">
     <div class="village-header">
-      <select v-model="selectedListId">
+      <!-- <select v-model="selectedListId">
         <option v-for="({ listId, listName }, i) in farmLists" :value="listId" :key="i">{{listName}}</option>
-      </select>
+      </select> -->
       <!-- <a href="#" @click="api.send('addAction', { userId: village.playerId, type: 2, params: {listIds: [selectedListId], villageId: village.villageId} })">addFarm</a> -->
       <b class="village-name">
         {{village.name}}({{village.population}})
@@ -33,12 +33,9 @@
             </template>
             {{data.playerName}} ({{data.villageName}})
             {{+Object.values(data.movement.resources).join('') ? Object.values(data.movement.resources).join('|') : ''}}
-            {{timeLeft(data.movement.timeFinish)}}
+            {{timelib.timeLeft(data.movement.timeFinish)}}
           </div>
         </details>
-        <!-- <div class="movements-list" :style="`height: ${group.data.length < 6 ? 'auto': '0px'}`">
-          
-        </div> -->
       </div>
     </span>
     <span class="resources-block">
@@ -52,26 +49,16 @@
         +{{village.production[i]}}
       </div>
     </span>
-    <span class="building-queue">
-      <template v-for="([slot], i) in buildingQueue" >
-        <span v-if="slot" :key="i"
-          :class="`building buildingMini buildingType${slot.buildingType} queueType${slot.queueType} ${+slot.paid && 'paid'}`"
-          :title="estimate" @mouseover="estimate = timeLeft(slot.finished)">
-          <div class="levelBubble">{{building(slot.locationId).data.lvl - 0 + 1}}</div>
-          <progress v-if="slot.timeStart > 0" :value="currentTime - slot.timeStart" :max="slot.finished - slot.timeStart" class="buildingProgress"></progress>
-        </span>
-        <span v-else class="building" :key="i+'2'"></span>
-      </template>
-      <span class="building" @click="openCustomQueue"><div class="openQueue" >(123)</div></span>
-    </span>
+    <BuildingQueue :queue="buildingQueue" :buildings="village.buildings"></BuildingQueue>
   </div>
 </template>
 
 <script>
 import { tribes, recourses, moveTypes } from "./../../constants";
+import BuildingQueue from './BuildingQueue'
 export default {
   name: 'Village',
-  inject: ['api'],
+  inject: ['api', 'timelib'],
   props: {
     village: Object,
     farmLists: Object
@@ -83,21 +70,10 @@ export default {
       moveTypes,
       movingGroup: {},
       countDounTimers: [],
-      selectedListId: null,
-      currentTime: Math.trunc((new Date()).getTime() / 1000),
-      estimate: ''
+      selectedListId: null
     }
   },
   methods: {
-    time: function(timestamp) {
-      return new Date(+timestamp * 1000).toLocaleTimeString(undefined, { hour12: false })
-    },
-    timeLeft: function(timestamp) {
-      return new Date(timestamp*1000 - (new Date()).getTime()).toISOString().substr(11, 8)
-    },
-    building: function(locationId) {
-      return this.village.buildings.find(({ data }) => data.locationId === locationId)
-    },
     openCustomQueue: function(e) {
       console.log(e)
     }
@@ -127,11 +103,18 @@ export default {
     buildingQueue: function() { 
       return this.village.buildingQueue ? Object.values(this.village.buildingQueue.queues) : []
     }
-  }
+  },
+  components: { BuildingQueue },
 }
 </script>
 
 <style>
+details>summary~* {
+  margin-left: 20px;
+}
+summary {
+  cursor: pointer;
+}
 .openQueue {
   cursor: pointer;
   line-height: 78px;

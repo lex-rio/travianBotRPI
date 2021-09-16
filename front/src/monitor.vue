@@ -11,10 +11,10 @@
           </summary>
           <div v-for="(attack, i) in attacks" :key="i">
             <b>{{moveTypes[attack.data.movementType]}}</b>&nbsp;
-            <span>finish: <b>{{ time(attack.data.timeFinish * 1000) }}</b></span>
+            <span>finish: <b>{{ timelib.time(attack.data.timeFinish * 1000) }}</b></span>
             <span v-if="peeckedByKingdom[kingdom][attack.name] !== '?'">
-              start: <b>{{ time(peeckedByKingdom[kingdom][attack.name] - 180000) }} - {{ time(peeckedByKingdom[kingdom][attack.name]) }}</b>
-              time: <b>{{ time1(attack.data.timeFinish * 1000 - peeckedByKingdom[kingdom][attack.name]) }} + (0-3)minutes</b>
+              start: <b>{{ timelib.time(peeckedByKingdom[kingdom][attack.name] - 180000) }} - {{ timelib.time(peeckedByKingdom[kingdom][attack.name]) }}</b>
+              time: <b>{{ timelib.time1(attack.data.timeFinish * 1000 - peeckedByKingdom[kingdom][attack.name]) }} + (0-3)minutes</b>
             </span>
           </div>
         </details>
@@ -27,7 +27,7 @@
 import { moveTypes } from "./../constants";
 export default {
   name: "Monitor",
-  inject: ["api"],
+  inject: ["api", "timelib"],
   data() {
     return {
       moveTypes,
@@ -53,14 +53,6 @@ export default {
         }
       }
     });
-  },
-  methods: {
-    time: function (timestamp) {
-      return new Date(+timestamp).toLocaleTimeString(undefined, {hour12: false});
-    },
-    time1: function (timestamp) {
-      return new Date(timestamp).toISOString().substr(11, 8);
-    }
   },
 };
 </script>

@@ -15,7 +15,7 @@
         {{ userData.population }}
       </span>
       <Hero v-if="userData.hero" :hero="userData.hero"></Hero>
-      <a href="#" @click="api.send('setUserOnWatch', user.userId)">Make Watcher</a>
+      <a href="#" v-if="!isWatcher" @click="api.send('setUserOnWatch', user.userId)">Make Watcher</a>
       <span class="timers">
         <span @click="api.send('triggerAction', { actionId: action.actionId, userId: user.userId })" 
           v-for="(action, i) in user.actions" 
@@ -55,6 +55,9 @@ export default {
   computed: {
     userData: function () {
       return Object.values(this.user.actions)[0].lastResponse;
+    },
+    isWatcher: function () {
+      return !!Object.values(this.user.actions).find(({actionName}) => actionName === 'getKingdomVillageAttacks')
     }
   },
   components: {
