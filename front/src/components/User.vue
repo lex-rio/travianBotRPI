@@ -83,7 +83,8 @@ export default {
   height: 11px;
 }
 .user-head {
-  background-color: aquamarine;
+  background-color: darkslategray;
+  color: white;
 }
 .notifications {
   float: right;

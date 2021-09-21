@@ -8,12 +8,12 @@ const botId = process.env.BOT_ID
 module.exports = {
   log: (chatId, message) => {
     const m = typeof message === 'string' ? message : JSON.stringify(message)
-    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=${chatId}&text=messagefrom-${process.env.ENV} ${m}`)
+    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=${chatId}&text=messagefrom-${process.env.ENVIRONMENT} ${m}`)
   },
 
   alert: message => {
     const m = typeof message === 'string' ? message : JSON.stringify(message)
-    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=-486239249&text=alertfrom-${process.env.ENV} ${m}`)
+    https.get(`https://${apiUrl}${botId}/sendMessage?chat_id=-486239249&text=alertfrom-${process.env.ENVIRONMENT} ${m}`)
   },
 
   broadcast: message => {
