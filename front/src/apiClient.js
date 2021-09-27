@@ -10,8 +10,8 @@ class ApiClient {
   coordinates = {x:0,y:0}
 
   constructor() {
-    // this.ws = new WebSocket(`ws://${window.location.hostname}:8082`)
-    this.ws = new WebSocket(`ws://wb2.ddns.net:8082`)
+    this.ws = new WebSocket(`ws://${window.location.hostname}:8082`)
+    // this.ws = new WebSocket(`ws://wb2.ddns.net:8082`)
     this.ws.onmessage = ({ data }) => {
       const parsed = JSON.parse(data)
       this.callbacks.forEach(([name, cb]) => {
